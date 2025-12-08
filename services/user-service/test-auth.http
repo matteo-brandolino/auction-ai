@@ -1,0 +1,77 @@
+### Variables
+@baseUrl = http://localhost:3001
+@email = matteo@test.com
+@password = password123
+
+###############################################
+# 1. Health Check
+###############################################
+GET {{baseUrl}}/health
+
+###############################################
+# 2. Root endpoint (info API)
+###############################################
+GET {{baseUrl}}/
+
+###############################################
+# 3. REGISTER - Crea nuovo utente
+###############################################
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "name": "Matteo"
+}
+
+###############################################
+# 4. LOGIN - Autenticazione
+###############################################
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+###############################################
+# 5. REFRESH TOKEN
+# ⚠️ Sostituisci YOUR_REFRESH_TOKEN con il token vero dal 
+response di register/login
+###############################################
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+ {
+    "refreshToken": "{{login.response.body.tokens.refreshToken}}"
+}
+
+
+###############################################
+# 6. LOGIN con password SBAGLIATA (deve fallire)
+###############################################
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "wrongpassword"
+}
+
+###############################################
+# 7. Registrazione con email DUPLICATA (deve fallire)
+###############################################
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "name": "Matteo 2"
+}
+
+
+
