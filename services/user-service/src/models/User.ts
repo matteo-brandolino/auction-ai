@@ -8,6 +8,11 @@ export interface IUser extends Document {
   role: "user" | "admin";
   createdAt: Date;
   updatedAt: Date;
+  credits: number;
+  totalBids: number;
+  auctionsWon: number;
+  auctionsCreated: number;
+  badges: string[];
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -36,6 +41,31 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    credits: {
+      type: Number,
+      default: 10000,
+      min: [0, "credits cannot be negative"],
+      required: true,
+    },
+    totalBids: {
+      type: Number,
+      default: 0,
+      min: [0, "Total bids cannot be negative"],
+    },
+    auctionsWon: {
+      type: Number,
+      default: 0,
+      min: [0, "Auctions won cannot be negative"],
+    },
+    auctionsCreated: {
+      type: Number,
+      default: 0,
+      min: [0, "Auctions created cannot be negative"],
+    },
+    badges: {
+      type: [String],
+      default: [],
     },
   },
   {

@@ -1,0 +1,129 @@
+### Variables
+@gatewayUrl = http://localhost:3000
+@email = bidwars1@test.com
+@password = password123
+
+###############################################
+# PHASE 1: Test User Service with Credits/Stats
+###############################################
+
+###
+# 1. REGISTER new user (should have 10000 credits by default)
+###
+# @name register
+POST {{gatewayUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "name": "BidWars Test User"
+}
+
+###
+# Verify in response:
+# - user.credits = 10000
+# - user.totalBids = 0
+# - user.auctionsWon = 0
+# - user.auctionsCreated = 0
+# - user.badges = []
+
+###
+# 2. LOGIN
+###
+# @name login
+POST {{gatewayUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+###
+# 3. GET /api/users/me - Get complete user data (NEW ENDPOINT)
+###
+GET {{gatewayUrl}}/api/users/me
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
+
+###
+# Verify:
+# - All user fields including credits, stats, badges
+# - Status 200
+
+###
+# 4. POST /api/users/credits - Add 5000 credits (TESTING)
+###
+POST {{gatewayUrl}}/api/users/credits
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
+
+{
+    "amount": 5000
+}
+
+###
+# Verify:
+# - credits should be 15000 (10000 + 5000)
+
+###
+# 5. GET /api/users/me - Verify updated credits
+###
+GET {{gatewayUrl}}/api/users/me
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
+
+###
+# Verify:
+# - user.credits = 15000
+
+###
+# 6. POST /api/users/credits - Subtract 3000 credits
+###
+POST {{gatewayUrl}}/api/users/credits
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
+
+{
+    "amount": -3000
+}
+
+###
+# Verify:
+# - credits should be 12000 (15000 - 3000)
+
+###
+# 7. POST /api/users/credits - Try to subtract too many credits (should fail)
+###
+POST {{gatewayUrl}}/api/users/credits
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
+
+{
+    "amount": -20000
+}
+
+###
+# Verify:
+# - Status 400
+# - Error: "Insufficient credits"
+
+###
+# 8. GET /api/users/me - Without token (should fail)
+###
+GET {{gatewayUrl}}/api/users/me
+
+###
+# Verify:
+# - Status 401
+# - Error: "No token provided" or "Unauthorized"
+
+###############################################
+# Complete Test Flow
+###############################################
+# 1. Register → credits 10000 ✓
+# 2. Login → get JWT token ✓
+# 3. GET /me → see complete data ✓
+# 4. POST /credits +5000 → credits 15000 ✓
+# 5. POST /credits -3000 → credits 12000 ✓
+# 6. POST /credits -20000 → error 400 ✓
+###############################################

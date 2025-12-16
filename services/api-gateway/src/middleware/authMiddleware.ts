@@ -44,6 +44,11 @@ export const authMiddleware = (
 
     req.user = decodedUser;
 
+    //custom headers for user service
+    req.headers["x-user-id"] = decodedUser.userId;
+    req.headers["x-user-email"] = decodedUser.email;
+    req.headers["x-user-role"] = decodedUser.role;
+
     next();
   } catch (error) {
     res.status(401).json({ error: "Invalid or expired token" });

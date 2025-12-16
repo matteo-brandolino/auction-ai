@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { createProxyMiddleware } from "http-proxy-middleware";
+import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 import { authMiddleware } from "./middleware/authMiddleware";
 
 dotenv.config();
@@ -20,6 +20,7 @@ const limiter = rateLimit({
 app.use(helmet());
 app.use(cors());
 app.use(limiter);
+app.use(express.json());
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
@@ -50,20 +51,29 @@ app.use(
     changeOrigin: true,
     logger: console,
     pathFilter: "/api/auth/**",
+    on: {
+      proxyReq: fixRequestBody, // to pass body in post/put request -> avoid strange timeout in api call
+    },
   })
 );
 
 // ===== PROTECTED ROUTES (with auth) =====
 
-// express.json() must be after proxymiddleware
-app.use(express.json());
+// Apply authentication to all /api/users routes
+app.use("/api/users", authMiddleware);
 
-app.get("/api/users/profile", authMiddleware, (req: Request, res: Response) => {
-  res.json({
-    message: "Protected profile endpoint",
-    user: req.user,
-  });
-});
+// Proxy for /api/users/* (keep full path)
+app.use(
+  createProxyMiddleware({
+    target: process.env.USER_SERVICE_URL,
+    changeOrigin: true,
+    logger: console,
+    pathFilter: "/api/users/**",
+    on: {
+      proxyReq: fixRequestBody,
+    },
+  })
+);
 
 // Start server
 app.listen(PORT, () => {

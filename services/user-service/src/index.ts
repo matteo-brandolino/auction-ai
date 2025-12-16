@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { connectDB } from "./config/database";
 import { validateEnv } from "./config/env";
 import authRoutes from "./routes/authRoutes";
+import userRoutes from "./routes/userRoutes";
 
 // Carica .env e verifica
 dotenv.config();
@@ -35,11 +36,14 @@ app.get("/", (req: Request, res: Response) => {
       register: "POST /api/auth/register",
       login: "POST /api/auth/login",
       refresh: "POST /api/auth/refresh",
+      me: "GET /api/users/me (protected)",
+      credits: "POST /api/users/credits (protected)",
     },
   });
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 const startServer = async () => {
   try {

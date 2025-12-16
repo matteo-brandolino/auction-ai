@@ -19,6 +19,11 @@ const commonResponse = (
       email: user.email,
       name: user.name,
       role: user.role,
+      credits: user.credits,
+      totalBids: user.totalBids,
+      auctionsWon: user.auctionsWon,
+      auctionsCreated: user.auctionsCreated,
+      badges: user.badges,
     },
     tokens: {
       accessToken,
