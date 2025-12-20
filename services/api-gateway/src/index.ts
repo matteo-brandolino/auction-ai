@@ -32,7 +32,7 @@ app.get("/health", (req: Request, res: Response) => {
 
 app.get("/", (req: Request, res: Response) => {
   res.json({
-    message: "AuctionAI API Gateway",
+    message: "BidWars API Gateway",
     version: "1.0.0",
     endpoints: {
       health: "/health",
@@ -62,7 +62,7 @@ app.use(
 // Apply authentication to all /api/users routes
 app.use("/api/users", authMiddleware);
 
-// Proxy for /api/users/* (keep full path)
+// Proxy for /api/users/*
 app.use(
   createProxyMiddleware({
     target: process.env.USER_SERVICE_URL,
@@ -74,11 +74,24 @@ app.use(
     },
   })
 );
+app.use("/api/items", authMiddleware);
 
-// Start server
+// Proxy for /api/items/*
+app.use(
+  createProxyMiddleware({
+    target: process.env.ITEM_SERVICE_URL,
+    changeOrigin: true,
+    logger: console,
+    pathFilter: "/api/items/**",
+    on: {
+      proxyReq: fixRequestBody,
+    },
+  })
+);
+
 app.listen(PORT, () => {
-  console.log(`🚀 API Gateway running on http://localhost:${PORT}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-  console.log(`📝 Proxying to User Service: ${process.env.USER_SERVICE_URL}`);
-  console.log(`🔒 Protected routes require Bearer token`);
+  console.log(`API Gateway running on http://localhost:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Proxying to User Service: ${process.env.USER_SERVICE_URL}`);
+  console.log(`Protected routes require Bearer token`);
 });

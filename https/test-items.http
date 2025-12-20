@@ -1,0 +1,235 @@
+### Variables
+@gatewayUrl = http://localhost:3000
+
+# Run test-auth.http first to get login token
+# Copy the accessToken from login response and paste here:
+@token = 123
+
+###############################################
+# Item Service Tests - PHASE 2
+###############################################
+
+###
+# 1. POST /api/items - Create item (Camera)
+###
+# @name createCamera
+POST {{gatewayUrl}}/api/items
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Vintage Camera",
+    "description": "Beautiful vintage camera from the 1960s in excellent condition. Perfect for collectors!",
+    "images": ["https://example.com/camera1.jpg", "https://example.com/camera2.jpg"],
+    "category": "collectibles",
+    "condition": "good"
+}
+
+###
+# Verify:
+# - Status 201
+# - item.status = "available"
+# - item created with correct data
+
+###
+# 2. POST /api/items - Create item (Laptop)
+###
+# @name createLaptop
+POST {{gatewayUrl}}/api/items
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Gaming Laptop",
+    "description": "High-performance gaming laptop with RTX 4080",
+    "images": ["https://example.com/laptop.jpg"],
+    "category": "electronics",
+    "condition": "new"
+}
+
+###
+# 3. POST /api/items - Create item (Book)
+###
+# @name createBook
+POST {{gatewayUrl}}/api/items
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Rare First Edition Book",
+    "description": "First edition signed by the author",
+    "images": [],
+    "category": "books",
+    "condition": "like_new"
+}
+
+###
+# 4. GET /api/items - List my items
+###
+GET {{gatewayUrl}}/api/items
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - 3 items in array
+# - Sorted by createdAt descending (newest first)
+
+###
+# 5. GET /api/items?status=available - Filter by status
+###
+GET {{gatewayUrl}}/api/items?status=available
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - All items have status "available"
+
+###
+# 6. GET /api/items/:id - Get item details (PROTECTED)
+###
+GET {{gatewayUrl}}/api/items/{{createCamera.response.body.item.id}}
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Full item details
+# - Requires authentication
+
+###
+# 7. PATCH /api/items/:id - Update item
+###
+PATCH {{gatewayUrl}}/api/items/{{createCamera.response.body.item.id}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Vintage Camera - RESTORED",
+    "condition": "like_new",
+    "description": "Professionally restored vintage camera in mint condition!"
+}
+
+###
+# Verify:
+# - Status 200
+# - Fields updated correctly
+# - updatedAt timestamp changed
+
+###
+# 8. GET /api/items/:id - Verify update
+###
+GET {{gatewayUrl}}/api/items/{{createCamera.response.body.item.id}}
+
+###
+# Verify:
+# - Updated title and description visible
+
+###
+# 9. DELETE /api/items/:id - Delete item
+###
+DELETE {{gatewayUrl}}/api/items/{{createLaptop.response.body.item.id}}
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Message: "Item deleted successfully"
+
+###
+# 10. GET /api/items - Verify deletion
+###
+GET {{gatewayUrl}}/api/items
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Only 2 items remaining (camera and book)
+# - Laptop is gone
+
+###
+# 11. POST /api/items - Without auth (should fail)
+###
+POST {{gatewayUrl}}/api/items
+Content-Type: application/json
+
+{
+    "title": "Unauthorized Item",
+    "description": "This should fail",
+    "category": "other",
+    "condition": "new"
+}
+
+###
+# Verify:
+# - Status 401
+# - Error: "Unauthorized" or "No token provided"
+
+###
+# 12. POST /api/items - Missing required fields (should fail)
+###
+POST {{gatewayUrl}}/api/items
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Incomplete Item"
+}
+
+###
+# Verify:
+# - Status 400
+# - Error about missing required fields
+
+###
+# 13. PATCH /api/items/:id - Invalid item ID (should fail)
+###
+PATCH {{gatewayUrl}}/api/items/invalid-id
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Updated"
+}
+
+###
+# Verify:
+# - Status 400
+# - Error: "Invalid item ID"
+
+###
+# 14. GET /api/items/:id - Non-existent item (should fail)
+###
+GET {{gatewayUrl}}/api/items/507f1f77bcf86cd799439011
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 404
+# - Error: "Item not found"
+
+###
+# 15. DELETE /api/items/:id - Try to delete non-existent item
+###
+DELETE {{gatewayUrl}}/api/items/507f1f77bcf86cd799439011
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 404
+# - Error: "Item not found"
+
+###############################################
+# Test Summary - Item Service CRUD
+###############################################
+# ✓ Create items (3 different categories)
+# ✓ List all user's items
+# ✓ Filter items by status
+# ✓ Get item details (protected - requires auth)
+# ✓ Update item fields
+# ✓ Delete item
+# ✓ Authentication validation (401 errors)
+# ✓ Input validation (400 errors)
+# ✓ ObjectId validation
+# ✓ Not found handling (404 errors)
+###############################################

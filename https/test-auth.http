@@ -1,0 +1,75 @@
+### Variables
+@gatewayUrl = http://localhost:3000
+@email = bidwars@test.com
+@password = password123
+
+###############################################
+# Authentication Tests
+###############################################
+
+###
+# 1. REGISTER new user
+###
+# @name register
+POST {{gatewayUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "name": "BidWars Test User"
+}
+
+###
+# Verify:
+# - Status 201
+# - user.credits = 10000
+# - tokens returned
+
+###
+# 2. LOGIN
+###
+# @name login
+POST {{gatewayUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+###
+# Verify:
+# - Status 200
+# - accessToken and refreshToken
+
+###
+# 3. REFRESH token
+###
+POST {{gatewayUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "{{login.response.body.tokens.refreshToken}}"
+}
+
+###
+# Verify:
+# - Status 200
+# - New accessToken
+
+###
+# 4. LOGIN with wrong password (should fail)
+###
+POST {{gatewayUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "wrongpassword"
+}
+
+###
+# Verify:
+# - Status 401
+# - Error: "Invalid credentials"

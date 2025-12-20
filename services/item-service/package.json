@@ -1,8 +1,8 @@
 {
-  "name": "api-gateway",
+  "name": "item-service",
   "version": "1.0.0",
   "private": true,
-  "description": "API Gateway for BidWars platform",
+  "description": "Item management service for BidWars",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --exec tsx src/index.ts",
@@ -10,7 +10,6 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "express-rate-limit": "^7.1.5",
-    "http-proxy-middleware": "^3.0.0"
+    "mongoose": "^8.0.0"
   }
 }
