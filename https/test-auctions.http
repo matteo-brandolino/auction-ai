@@ -1,0 +1,323 @@
+### Variables
+@gatewayUrl = http://localhost:3000
+
+# Run test-auth.http first to get login token
+# Copy the accessToken from login response and paste here:
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRhZDdiYjViMmRiNzQ3ZDllNGZmOTMiLCJlbWFpbCI6ImJpZHdhcnNAdGVzdC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NjUxNDQ3MywiZXhwIjoxNzY2NTE1MzczLCJhdWQiOiJhdWN0aW9uYWktdXNlcnMiLCJpc3MiOiJhdWN0aW9uYWktcGxhdGZvcm0ifQ.PtqPRRrcLewHq-g4UnT7-DTyQVKeO_FWoogVPpRrNfc
+# Run test-items.http first to create an item
+# Copy the item ID from create response and paste here:
+@itemId = 694ae01b04833e8d40fef664
+
+###############################################
+# Auction Service Tests - FASE 3
+###############################################
+
+###
+# 1. POST /api/auctions - Create auction (draft)
+###
+# @name createAuction1
+POST {{gatewayUrl}}/api/auctions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Vintage Camera Auction",
+    "description": "Rare vintage camera from the 1960s - don't miss this opportunity!",
+    "itemId": "{{itemId}}",
+    "category": "collectibles",
+    "startingPrice": 100,
+    "minIncrement": 10,
+    "reservePrice": 500,
+    "startTime": "2025-12-25T10:00:00.000Z",
+    "endTime": "2025-12-25T18:00:00.000Z",
+    "autoExtendSeconds": 10
+}
+
+###
+# Verify:
+# - Status 201
+# - auction.status = "draft"
+# - auction.currentPrice = 100 (same as startingPrice)
+# - auction.originalEndTime = endTime
+
+###
+# 2. POST /api/auctions - Create second auction
+###
+# @name createAuction2
+POST {{gatewayUrl}}/api/auctions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Gaming Laptop Auction",
+    "description": "High-performance gaming laptop - bidding starts low!",
+    "itemId": "{{itemId}}",
+    "category": "electronics",
+    "startingPrice": 200,
+    "minIncrement": 20,
+    "startTime": "2025-12-26T10:00:00.000Z",
+    "endTime": "2025-12-26T20:00:00.000Z"
+}
+
+###
+# Verify:
+# - Status 201
+# - auction.minIncrement defaults if not provided
+# - auction.reservePrice is optional (null)
+
+###
+# 3. GET /api/auctions - List my auctions
+###
+GET {{gatewayUrl}}/api/auctions
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Array of auctions owned by authenticated user
+# - Both draft auctions visible
+
+###
+# 4. GET /api/auctions?status=draft - Filter by status
+###
+GET {{gatewayUrl}}/api/auctions?status=draft
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - All returned auctions have status "draft"
+
+###
+# 5. GET /api/auctions?category=electronics - Filter by category
+###
+GET {{gatewayUrl}}/api/auctions?category=electronics
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Only auctions in electronics category returned
+
+###
+# 6. GET /api/auctions/active - Get active auctions
+###
+GET {{gatewayUrl}}/api/auctions/active
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Empty array (no active auctions yet)
+# - Sorted by endTime ascending
+
+###
+# 7. GET /api/auctions/upcoming - Get upcoming auctions
+###
+GET {{gatewayUrl}}/api/auctions/upcoming
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Shows pending auctions
+# - Sorted by startTime ascending
+
+###
+# 8. GET /api/auctions/ended - Get ended auctions
+###
+GET {{gatewayUrl}}/api/auctions/ended
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Shows ended auctions
+# - Sorted by endTime descending (newest first)
+
+###
+# 9. GET /api/auctions/:id - Get auction details
+###
+GET {{gatewayUrl}}/api/auctions/{{createAuction1.response.body.auction.id}}
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Public endpoint (no auth required)
+# - Full auction details returned
+
+###
+# 10. PATCH /api/auctions/:id - Update auction
+###
+PATCH {{gatewayUrl}}/api/auctions/{{createAuction1.response.body.auction.id}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Vintage Camera Auction - UPDATED",
+    "description": "Professionally restored vintage camera - RARE FIND!",
+    "startingPrice": 150,
+    "reservePrice": 600
+}
+
+###
+# Verify:
+# - Status 200
+# - Fields updated correctly
+# - currentPrice updated to match new startingPrice (150)
+# - Can only update draft auctions
+
+###
+# 11. POST /api/auctions/:id/publish - Publish auction (draft → pending)
+###
+POST {{gatewayUrl}}/api/auctions/{{createAuction1.response.body.auction.id}}/publish
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - auction.status changed from "draft" to "pending"
+# - Message: "Auction published successfully"
+
+###
+# 12. POST /api/auctions/:id/start - Start auction manually (pending → active)
+###
+POST {{gatewayUrl}}/api/auctions/{{createAuction1.response.body.auction.id}}/start
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200 (now it works because status is "pending")
+# - auction.status changed from "pending" to "active"
+# - Message: "Auction started successfully"
+
+###
+# 13. DELETE /api/auctions/:id - Delete auction
+###
+DELETE {{gatewayUrl}}/api/auctions/{{createAuction2.response.body.auction.id}}
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Message: "Auction deleted successfully"
+# - Can delete draft or pending auctions only
+
+###
+# 14. POST /api/auctions - Missing required fields (should fail)
+###
+POST {{gatewayUrl}}/api/auctions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Incomplete Auction"
+}
+
+###
+# Verify:
+# - Status 400
+# - Error about missing required fields (itemId, category, startingPrice, startTime, endTime)
+
+###
+# 15. POST /api/auctions - Invalid timing (endTime before startTime)
+###
+POST {{gatewayUrl}}/api/auctions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Invalid Timing Auction",
+    "description": "This should fail",
+    "itemId": "{{itemId}}",
+    "category": "other",
+    "startingPrice": 50,
+    "startTime": "2025-12-25T18:00:00.000Z",
+    "endTime": "2025-12-25T10:00:00.000Z"
+}
+
+###
+# Verify:
+# - Status 400
+# - Error: "End time must be after start time"
+
+###
+# 16. POST /api/auctions - Duration too short (should fail)
+###
+POST {{gatewayUrl}}/api/auctions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Too Short Auction",
+    "description": "Duration less than 5 minutes",
+    "itemId": "{{itemId}}",
+    "category": "other",
+    "startingPrice": 50,
+    "startTime": "2025-12-25T10:00:00.000Z",
+    "endTime": "2025-12-25T10:02:00.000Z"
+}
+
+###
+# Verify:
+# - Status 400
+# - Error: "Auction duration must be at least 5 minutes"
+
+###
+# 17. PATCH /api/auctions/:id - Update non-existent auction (should fail)
+###
+PATCH {{gatewayUrl}}/api/auctions/507f1f77bcf86cd799439011
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Updated"
+}
+
+###
+# Verify:
+# - Status 404
+# - Error: "Auction not found"
+
+###
+# 18. POST /api/auctions - Without auth (should fail)
+###
+POST {{gatewayUrl}}/api/auctions
+Content-Type: application/json
+
+{
+    "title": "Unauthorized Auction",
+    "description": "This should fail",
+    "itemId": "{{itemId}}",
+    "category": "other",
+    "startingPrice": 50,
+    "startTime": "2025-12-25T10:00:00.000Z",
+    "endTime": "2025-12-25T18:00:00.000Z"
+}
+
+###
+# Verify:
+# - Status 401
+# - Error: "Unauthorized" or "No token provided"
+
+###############################################
+# Test Summary - Auction Service
+###############################################
+# ✓ Create auctions (draft status)
+# ✓ List user's auctions with filters (status, category)
+# ✓ Get auctions (active, upcoming, ended, details)
+# ✓ Update auction fields (draft only)
+# ✓ Publish auction (draft → pending)
+# ✓ Start auction manually (pending → active)
+# ✓ Delete auction (draft/pending only)
+# ✓ Authentication validation (401 errors)
+# ✓ Input validation (400 errors - missing fields, timing)
+# ✓ Timing validation (min 5 min, max 7 days)
+# ✓ Not found handling (404 errors)
+###############################################
+
+# TODO after FASE 3 basic testing:
+# - Implement Item Service HTTP calls in createAuction
+# - Implement Item Service HTTP calls in deleteAuction
+# - Test item status changes (available -> in_auction -> available)

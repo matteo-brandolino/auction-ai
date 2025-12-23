@@ -4,7 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import { connectDB } from "./config/database";
 import { validateEnv } from "./config/env";
-import itemRoutes from "./routes/itemRoutes"; // ← IMPORTA
+import itemRoutes from "./routes/itemRoutes";
 
 dotenv.config();
 validateEnv();
@@ -20,22 +20,22 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
     status: "ok",
-    service: "user-service",
+    service: "item-service",
     timestamp: new Date().toISOString(),
   });
 });
 
 app.get("/", (req: Request, res: Response) => {
   res.json({
-    message: "AuctionAI User Service API",
+    message: "BidWars Item Service API",
     version: "1.0.0",
     endpoints: {
       health: "/health",
-      register: "POST /api/auth/register",
-      login: "POST /api/auth/login",
-      refresh: "POST /api/auth/refresh",
-      me: "GET /api/users/me (protected)",
-      credits: "POST /api/users/credits (protected)",
+      createItem: "POST /api/items (protected)",
+      listItems: "GET /api/items (protected)",
+      getItem: "GET /api/items/:id (protected)",
+      updateItem: "PATCH /api/items/:id (protected)",
+      deleteItem: "DELETE /api/items/:id (protected)",
     },
   });
 });
@@ -46,7 +46,7 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(`User Service running on http://localhost:${PORT}`);
+      console.log(`Item Service running on http://localhost:${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
     });
   } catch (error) {

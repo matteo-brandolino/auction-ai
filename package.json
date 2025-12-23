@@ -9,8 +9,9 @@
     "dev:gateway": "pnpm --filter api-gateway dev",
     "dev:user": "pnpm --filter user-service dev",
     "dev:item": "pnpm --filter item-service dev",
+    "dev:auction": "pnpm --filter auction-service dev",
     "build:all": "pnpm -r run build",
-    "dev:all": "concurrently -n \"GATEWAY,USER,ITEM\" -c \"blue,green,yellow\" \"pnpm dev:gateway\" \"pnpm dev:user\" \"pnpm dev:item\""
+    "dev:all": "concurrently -n \"GATEWAY,USER,ITEM,AUCTION\" -c \"blue,green,yellow,magenta\" \"pnpm dev:gateway\" \"pnpm dev:user\" \"pnpm dev:item\" \"pnpm dev:auction\""
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

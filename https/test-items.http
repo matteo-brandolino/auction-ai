@@ -3,7 +3,7 @@
 
 # Run test-auth.http first to get login token
 # Copy the accessToken from login response and paste here:
-@token = 123
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRhZDdiYjViMmRiNzQ3ZDllNGZmOTMiLCJlbWFpbCI6ImJpZHdhcnNAdGVzdC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NjUxNDQ3MywiZXhwIjoxNzY2NTE1MzczLCJhdWQiOiJhdWN0aW9uYWktdXNlcnMiLCJpc3MiOiJhdWN0aW9uYWktcGxhdGZvcm0ifQ.PtqPRRrcLewHq-g4UnT7-DTyQVKeO_FWoogVPpRrNfc
 
 ###############################################
 # Item Service Tests - PHASE 2

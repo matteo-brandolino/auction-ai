@@ -96,7 +96,7 @@ ItemSchema.methods.canBeModified = function (): boolean {
 };
 
 ItemSchema.methods.isInAuction = function (): boolean {
-  return this.status !== "in_auction";
+  return this.status === "in_auction";
 };
 
 export const Item = mongoose.model<IItem>("Item", ItemSchema);

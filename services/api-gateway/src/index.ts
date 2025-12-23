@@ -3,8 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
-import { authMiddleware } from "./middleware/authMiddleware";
+import { createPublicProxy, createProtectedProxy } from "./utils/helpers";
 
 dotenv.config();
 
@@ -36,58 +35,21 @@ app.get("/", (req: Request, res: Response) => {
     version: "1.0.0",
     endpoints: {
       health: "/health",
-      auth: "/api/auth/* (public)",
-      users: "/api/users/* (protected)",
+      auth: "/api/auth/*",
+      users: "/api/users/*",
+      auctions: "/api/auctions/*",
     },
   });
 });
 
 // ===== PUBLIC ROUTES (no auth) =====
 
-// Proxy for /api/auth/*
-app.use(
-  createProxyMiddleware({
-    target: process.env.USER_SERVICE_URL,
-    changeOrigin: true,
-    logger: console,
-    pathFilter: "/api/auth/**",
-    on: {
-      proxyReq: fixRequestBody, // to pass body in post/put request -> avoid strange timeout in api call
-    },
-  })
-);
+createPublicProxy(app, "/api/auth", process.env.USER_SERVICE_URL);
 
 // ===== PROTECTED ROUTES (with auth) =====
-
-// Apply authentication to all /api/users routes
-app.use("/api/users", authMiddleware);
-
-// Proxy for /api/users/*
-app.use(
-  createProxyMiddleware({
-    target: process.env.USER_SERVICE_URL,
-    changeOrigin: true,
-    logger: console,
-    pathFilter: "/api/users/**",
-    on: {
-      proxyReq: fixRequestBody,
-    },
-  })
-);
-app.use("/api/items", authMiddleware);
-
-// Proxy for /api/items/*
-app.use(
-  createProxyMiddleware({
-    target: process.env.ITEM_SERVICE_URL,
-    changeOrigin: true,
-    logger: console,
-    pathFilter: "/api/items/**",
-    on: {
-      proxyReq: fixRequestBody,
-    },
-  })
-);
+createProtectedProxy(app, "/api/users", process.env.USER_SERVICE_URL);
+createProtectedProxy(app, "/api/items", process.env.ITEM_SERVICE_URL);
+createProtectedProxy(app, "/api/auctions", process.env.AUCTION_SERVICE_URL);
 
 app.listen(PORT, () => {
   console.log(`API Gateway running on http://localhost:${PORT}`);

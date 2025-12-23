@@ -4,14 +4,13 @@ import cors from "cors";
 import helmet from "helmet";
 import { connectDB } from "./config/database";
 import { validateEnv } from "./config/env";
-import authRoutes from "./routes/authRoutes";
-import userRoutes from "./routes/userRoutes";
+import auctionRoutes from "./routes/auctionRoutes";
 
 dotenv.config();
 validateEnv();
 
 const app: Application = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 
 app.use(helmet());
 app.use(cors());
@@ -21,35 +20,40 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
     status: "ok",
-    service: "user-service",
+    service: "auction-service",
     timestamp: new Date().toISOString(),
   });
 });
 
 app.get("/", (req: Request, res: Response) => {
   res.json({
-    message: "AuctionAI User Service API",
+    message: "BidWars Auction Service API",
     version: "1.0.0",
     endpoints: {
       health: "/health",
-      register: "POST /api/auth/register",
-      login: "POST /api/auth/login",
-      refresh: "POST /api/auth/refresh",
-      me: "GET /api/users/me (protected)",
-      credits: "POST /api/users/credits (protected)",
+      createAuction: "POST /api/auctions",
+      listAuctions: "GET /api/auctions",
+      activeAuctions: "GET /api/auctions/active",
+      upcomingAuctions: "GET /api/auctions/upcoming",
+      endedAuctions: "GET /api/auctions/ended",
+      getAuction: "GET /api/auctions/:id",
+      updateAuction: "PATCH /api/auctions/:id",
+      deleteAuction: "DELETE /api/auctions/:id",
+      publishAuction: "POST /api/auctions/:id/publish",
+      startAuction: "POST /api/auctions/:id/start",
     },
   });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/auctions", auctionRoutes);
 
 const startServer = async () => {
   try {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(`User Service running on http://localhost:${PORT}`);
+      console.log(`Auction Service running on http://localhost:${PORT}`);
+      console.log(`Database: bidwars-auctions`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
     });
   } catch (error) {

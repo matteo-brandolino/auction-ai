@@ -166,7 +166,7 @@ export const updateItem = async (
     }
 
     // Check ownership
-    if (item.isOwnedBy(userId)) {
+    if (!item.isOwnedBy(userId)) {
       res.status(403).json({ error: "You can only update your own items" });
       return;
     }
@@ -235,7 +235,7 @@ export const deleteItem = async (
       return;
     }
 
-    if (item.isOwnedBy(userId)) {
+    if (!item.isOwnedBy(userId)) {
       res.status(403).json({ error: "You can only update your own items" });
       return;
     }
