@@ -124,7 +124,7 @@ export const createAuction = async (
         return;
       }
       const updateData = (await updateResponseRaw.json()) as ItemUpdateResponse;
-      console.log(`Update item${updateData.item}`);
+      console.log(`Update item ${updateData.item.id} ${updateData.item.title}`);
     } catch (error) {
       console.error("Item service call failed:", error);
       res.status(500).json({

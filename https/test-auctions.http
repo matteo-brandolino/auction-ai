@@ -3,7 +3,7 @@
 
 # Run test-auth.http first to get login token
 # Copy the accessToken from login response and paste here:
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRhZDdiYjViMmRiNzQ3ZDllNGZmOTMiLCJlbWFpbCI6ImJpZHdhcnNAdGVzdC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NjUxNDQ3MywiZXhwIjoxNzY2NTE1MzczLCJhdWQiOiJhdWN0aW9uYWktdXNlcnMiLCJpc3MiOiJhdWN0aW9uYWktcGxhdGZvcm0ifQ.PtqPRRrcLewHq-g4UnT7-DTyQVKeO_FWoogVPpRrNfc
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRhZDdiYjViMmRiNzQ3ZDllNGZmOTMiLCJlbWFpbCI6ImJpZHdhcnNAdGVzdC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NjUyMDM1MSwiZXhwIjoxNzY2NTIxMjUxLCJhdWQiOiJhdWN0aW9uYWktdXNlcnMiLCJpc3MiOiJhdWN0aW9uYWktcGxhdGZvcm0ifQ.-RsSyhW5C753_EDxWLhcy-_G36RqZlK8kOlntIzvLmE
 # Run test-items.http first to create an item
 # Copy the item ID from create response and paste here:
 @itemId = 694ae01b04833e8d40fef664

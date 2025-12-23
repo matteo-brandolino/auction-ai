@@ -37,7 +37,9 @@ app.get("/", (req: Request, res: Response) => {
       health: "/health",
       auth: "/api/auth/*",
       users: "/api/users/*",
+      items: "/api/items/*",
       auctions: "/api/auctions/*",
+      bids: "/api/bids/*",
     },
   });
 });
@@ -47,9 +49,11 @@ app.get("/", (req: Request, res: Response) => {
 createPublicProxy(app, "/api/auth", process.env.USER_SERVICE_URL);
 
 // ===== PROTECTED ROUTES (with auth) =====
+
 createProtectedProxy(app, "/api/users", process.env.USER_SERVICE_URL);
 createProtectedProxy(app, "/api/items", process.env.ITEM_SERVICE_URL);
 createProtectedProxy(app, "/api/auctions", process.env.AUCTION_SERVICE_URL);
+createProtectedProxy(app, "/api/bids", process.env.BID_SERVICE_URL);
 
 app.listen(PORT, () => {
   console.log(`API Gateway running on http://localhost:${PORT}`);

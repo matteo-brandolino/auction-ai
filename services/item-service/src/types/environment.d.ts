@@ -11,13 +11,13 @@ declare global {
 
   namespace NodeJS {
     interface ProcessEnv {
-      PORT?: string;
       NODE_ENV: "development" | "production" | "test";
+      PORT: string;
       MONGODB_URI: string;
       JWT_ACCESS_SECRET: string;
       JWT_REFRESH_SECRET: string;
-      ITEM_SERVICE_URL: string;
-      USER_SERVICE_URL: string;
+      JWT_ACCESS_EXPIRES_IN: string;
+      JWT_REFRESH_EXPIRES_IN: string;
     }
   }
 }

@@ -1,16 +1,23 @@
 declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        userId: string;
+        email: string;
+        role: string;
+      };
+    }
+  }
+
   namespace NodeJS {
     interface ProcessEnv {
-      PORT?: string;
       NODE_ENV: "development" | "production" | "test";
-
+      PORT: string;
       MONGODB_URI: string;
-
       JWT_ACCESS_SECRET: string;
       JWT_REFRESH_SECRET: string;
-
-      JWT_ACCESS_EXPIRES_IN: number;
-      JWT_REFRESH_EXPIRES_IN: number;
+      KAFKA_BROKER: string;
+      AUCTION_SERVICE_URL: string;
     }
   }
 }

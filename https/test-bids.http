@@ -1,0 +1,222 @@
+### Variables
+@gatewayUrl = http://localhost:3000
+
+# Run test-auth.http first to get login token
+# Copy the accessToken from login response and paste here:
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRhZjc4ZTVmMWVkZjJjZDM0ODQwZGQiLCJlbWFpbCI6ImJpZHdhcnM0QHRlc3QuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjY1MjA3MTksImV4cCI6MTc2NjUyMTYxOSwiYXVkIjoiYXVjdGlvbmFpLXVzZXJzIiwiaXNzIjoiYXVjdGlvbmFpLXBsYXRmb3JtIn0.zWqXC2Kl0krQsDOZb1p8uSigJci7xcEhWUa9x9jYvRc
+
+# Run test-auctions.http to create and start an auction
+# Copy the auction ID from response and paste here:
+@auctionId = 694af6aedd1092d4c6167dd5
+
+###############################################
+# Bid Service Tests - FASE 4
+###############################################
+
+###
+# 1. POST /api/bids - Place first bid
+###
+# @name placeBid1
+POST {{gatewayUrl}}/api/bids
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "auctionId": "{{auctionId}}",
+    "amount": 200
+}
+
+###
+# Verify:
+# - Status 201
+# - Bid placed successfully
+# - Kafka event published
+# - Check logs: "📤 Bid event published to Kafka: BID_PLACED"
+
+###
+# 2. POST /api/bids - Place second bid (higher amount)
+###
+# @name placeBid2
+POST {{gatewayUrl}}/api/bids
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "auctionId": "{{auctionId}}",
+    "amount": 250
+}
+
+###
+# Verify:
+# - Status 201
+# - Higher bid accepted
+
+###
+# 3. GET /api/bids - List my bids
+###
+GET {{gatewayUrl}}/api/bids
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - Array with my bids
+# - Sorted by timestamp descending (newest first)
+
+###
+# 4. GET /api/bids/auction/:auctionId - Get bids for specific auction
+###
+GET {{gatewayUrl}}/api/bids/auction/{{auctionId}}
+Authorization: Bearer {{token}}
+
+###
+# Verify:
+# - Status 200
+# - All bids for this auction
+# - Sorted by timestamp descending
+
+###
+# 5. POST /api/bids - Missing required fields (should fail)
+###
+POST {{gatewayUrl}}/api/bids
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "amount": 100
+}
+
+###
+# Verify:
+# - Status 400
+# - Error: "Missing required fields"
+
+###
+# 6. POST /api/bids - Invalid auction ID (should fail)
+###
+POST {{gatewayUrl}}/api/bids
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "auctionId": "invalid-id",
+    "amount": 100
+}
+
+###
+# Verify:
+# - Status 400
+# - Error: "Invalid auction ID"
+
+###
+# 7. POST /api/bids - Auction not found (should fail)
+###
+POST {{gatewayUrl}}/api/bids
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "auctionId": "507f1f77bcf86cd799439011",
+    "amount": 100
+}
+
+###
+# Verify:
+# - Status 404
+# - Error: "Auction not found"
+
+###
+# 8. POST /api/bids - Bid amount too low (should fail)
+###
+POST {{gatewayUrl}}/api/bids
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "auctionId": "{{auctionId}}",
+    "amount": 50
+}
+
+###
+# Verify:
+# - Status 400
+# - Error: "Bid amount too low"
+# - Message shows minimum bid required
+
+###
+# 9. POST /api/bids - Invalid amount (should fail)
+###
+POST {{gatewayUrl}}/api/bids
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "auctionId": "{{auctionId}}",
+    "amount": -10
+}
+
+###
+# Verify:
+# - Status 400
+# - Error: "Invalid bid amount"
+
+###
+# 10. POST /api/bids - Auction not active (should fail)
+###
+# Create a draft auction first, then try to bid on it
+POST {{gatewayUrl}}/api/bids
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "auctionId": "PASTE_DRAFT_AUCTION_ID_HERE",
+    "amount": 100
+}
+
+###
+# Verify:
+# - Status 400
+# - Error: "Auction not active"
+
+###
+# 11. POST /api/bids - Without auth (should fail)
+###
+POST {{gatewayUrl}}/api/bids
+Content-Type: application/json
+
+{
+    "auctionId": "{{auctionId}}",
+    "amount": 100
+}
+
+###
+# Verify:
+# - Status 401
+# - Error: "Unauthorized"
+
+###############################################
+# Test Summary - Bid Service
+###############################################
+# ✓ Place bids on active auctions
+# ✓ List user's bids
+# ✓ Get bids for specific auction
+# ✓ Kafka event publishing (check logs)
+# ✓ Validation (amount, auction status, ownership)
+# ✓ Authentication validation (401 errors)
+# ✓ Input validation (400 errors)
+# ✓ Not found handling (404 errors)
+###############################################
+
+# IMPORTANT NOTES:
+# 1. Before testing, make sure to:
+#    - Run test-auth.http to get a token
+#    - Run test-auctions.http to create an auction
+#    - Publish and start the auction (status must be "active")
+#    - Copy the auction ID to @auctionId variable
+#
+# 2. Check Kafka logs:
+#    - Bid Service should log: "📤 Bid event published to Kafka"
+#    - This confirms Kafka Producer is working
+#
+# 3. In FASE 5, we'll add a Consumer to Auction Service
+#    that will listen to these bid events and update auctions
