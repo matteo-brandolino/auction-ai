@@ -1,6 +1,6 @@
 ### Variables
 @gatewayUrl = http://localhost:3000
-@email = bidwars4@test.com
+@email = bidwars@test.com
 @password = password123
 
 ###############################################

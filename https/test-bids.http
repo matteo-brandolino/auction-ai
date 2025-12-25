@@ -3,11 +3,11 @@
 
 # Run test-auth.http first to get login token
 # Copy the accessToken from login response and paste here:
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRhZjc4ZTVmMWVkZjJjZDM0ODQwZGQiLCJlbWFpbCI6ImJpZHdhcnM0QHRlc3QuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjY1MjA3MTksImV4cCI6MTc2NjUyMTYxOSwiYXVkIjoiYXVjdGlvbmFpLXVzZXJzIiwiaXNzIjoiYXVjdGlvbmFpLXBsYXRmb3JtIn0.zWqXC2Kl0krQsDOZb1p8uSigJci7xcEhWUa9x9jYvRc
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRhZDdiYjViMmRiNzQ3ZDllNGZmOTMiLCJlbWFpbCI6ImJpZHdhcnNAdGVzdC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NjY3MzQ4OCwiZXhwIjoxNzY2Njc0Mzg4LCJhdWQiOiJhdWN0aW9uYWktdXNlcnMiLCJpc3MiOiJhdWN0aW9uYWktcGxhdGZvcm0ifQ.kg0tAF24k0KKCcfBWLykuWtk_XktsXA04hA_YziD0pM
 
 # Run test-auctions.http to create and start an auction
 # Copy the auction ID from response and paste here:
-@auctionId = 694af6aedd1092d4c6167dd5
+@auctionId = 694d4b1ecce205329fdd888e
 
 ###############################################
 # Bid Service Tests - FASE 4

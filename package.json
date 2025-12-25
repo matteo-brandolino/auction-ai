@@ -11,8 +11,9 @@
     "dev:item": "pnpm --filter item-service dev",
     "dev:auction": "pnpm --filter auction-service dev",
     "dev:bid": "pnpm --filter bid-service dev",
+    "dev:notification": "pnpm --filter notification-service dev",
     "build:all": "pnpm -r run build",
-    "dev:all": "concurrently -n \"GATEWAY,USER,ITEM,AUCTION,BID\" -c \"blue,green,yellow,magenta,cyan\" \"pnpm dev:gateway\" \"pnpm dev:user\" \"pnpm dev:item\" \"pnpm dev:auction\" \"pnpm dev:bid\""
+    "dev:all": "concurrently -n \"GATEWAY,USER,ITEM,AUCTION,BID,NOTIF\" -c \"blue,green,yellow,magenta,cyan,red\" \"pnpm dev:gateway\" \"pnpm dev:user\" \"pnpm dev:item\" \"pnpm dev:auction\" \"pnpm dev:bid\" \"pnpm dev:notification\""
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -20,6 +21,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/ms": "^2.1.0",
     "@types/node": "^20.10.0",
+    "@types/ws": "^8.18.1",
     "concurrently": "^8.2.0",
     "nodemon": "^3.0.2",
     "tsx": "^4.7.0",

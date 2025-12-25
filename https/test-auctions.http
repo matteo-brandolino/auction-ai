@@ -3,10 +3,10 @@
 
 # Run test-auth.http first to get login token
 # Copy the accessToken from login response and paste here:
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRhZDdiYjViMmRiNzQ3ZDllNGZmOTMiLCJlbWFpbCI6ImJpZHdhcnNAdGVzdC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NjUyMDM1MSwiZXhwIjoxNzY2NTIxMjUxLCJhdWQiOiJhdWN0aW9uYWktdXNlcnMiLCJpc3MiOiJhdWN0aW9uYWktcGxhdGZvcm0ifQ.-RsSyhW5C753_EDxWLhcy-_G36RqZlK8kOlntIzvLmE
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTRhZjc4ZTVmMWVkZjJjZDM0ODQwZGQiLCJlbWFpbCI6ImJpZHdhcnM0QHRlc3QuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NjY2NzMzNTAsImV4cCI6MTc2NjY3NDI1MCwiYXVkIjoiYXVjdGlvbmFpLXVzZXJzIiwiaXNzIjoiYXVjdGlvbmFpLXBsYXRmb3JtIn0.eLsBP-kDsD20-oGAAHp_IsU7pMckzqBk1cF9J8oJKRA
 # Run test-items.http first to create an item
 # Copy the item ID from create response and paste here:
-@itemId = 694ae01b04833e8d40fef664
+@itemId = 694d48fd01624e3f63c8b917
 
 ###############################################
 # Auction Service Tests - FASE 3
@@ -28,8 +28,8 @@ Authorization: Bearer {{token}}
     "startingPrice": 100,
     "minIncrement": 10,
     "reservePrice": 500,
-    "startTime": "2025-12-25T10:00:00.000Z",
-    "endTime": "2025-12-25T18:00:00.000Z",
+    "startTime": "2025-12-26T10:00:00.000Z",
+    "endTime": "2025-12-26T18:00:00.000Z",
     "autoExtendSeconds": 10
 }
 

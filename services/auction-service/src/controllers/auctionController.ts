@@ -149,7 +149,6 @@ export const createAuction = async (
       autoExtendSeconds: autoExtendSeconds || 10,
       status: "draft",
       totalBids: 0,
-      uniqueBidders: 0,
       viewerCount: 0,
     });
 

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BidWars Notifications Test</title>
+    <style>
+      body {
+        font-family: monospace;
+        padding: 20px;
+        background: #1e1e1e;
+        color: #d4d4d4;
+      }
+      #messages {
+        border: 1px solid #555;
+        padding: 10px;
+        height: 400px;
+        overflow-y: scroll;
+        background: #252526;
+      }
+      .message {
+        margin: 5px 0;
+        padding: 5px;
+        border-left: 3px solid #007acc;
+      }
+      .bid {
+        border-left-color: #4ec9b0;
+      }
+      .connected {
+        border-left-color: #608b4e;
+      }
+      button {
+        background: #007acc;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+      }
+      input {
+        padding: 8px;
+        margin: 5px;
+        background: #333;
+        color: #d4d4d4;
+        border: 1px solid #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔔 BidWars Notifications</h1>
+
+    <div>
+      <input type="text" id="userId" placeholder="User ID (optional)" />
+      <button onclick="connect()">Connect</button>
+      <button onclick="disconnect()">Disconnect</button>
+      <button onclick="clearMessages()">Clear</button>
+    </div>
+
+    <div id="status">Disconnected</div>
+    <div id="messages"></div>
+
+    <script>
+      let ws = null;
+
+      function connect() {
+        const userId = document.getElementById("userId").value;
+
+        ws = new WebSocket("ws://localhost:3006");
+
+        ws.onopen = () => {
+          updateStatus("Connected ✅", "green");
+
+          // Authenticate if userId provided
+          if (userId) {
+            ws.send(
+              JSON.stringify({
+                type: "AUTH",
+                userId: userId,
+              })
+            );
+            addMessage("Authenticated as: " + userId, "connected");
+          }
+        };
+
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          console.log("Received:", data);
+
+          if (data.type === "CONNECTED") {
+            addMessage(`Connected - Client ID: ${data.clientId}`, "connected");
+          } else if (data.type === "BID_PLACED") {
+            addMessage(
+              `🔨 ${data.data.message} (Auction: ${data.data.auctionId})`,
+              "bid"
+            );
+          } else {
+            addMessage(JSON.stringify(data, null, 2));
+          }
+        };
+
+        ws.onclose = () => {
+          updateStatus("Disconnected ❌", "red");
+        };
+
+        ws.onerror = (error) => {
+          console.error("WebSocket error:", error);
+          updateStatus("Error ⚠️", "orange");
+        };
+      }
+
+      function disconnect() {
+        if (ws) {
+          ws.close();
+          ws = null;
+        }
+      }
+
+      function updateStatus(text, color) {
+        const status = document.getElementById("status");
+        status.textContent = text;
+        status.style.color = color;
+      }
+
+      function addMessage(text, className = "") {
+        const messages = document.getElementById("messages");
+        const div = document.createElement("div");
+        div.className = `message ${className}`;
+        div.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      function clearMessages() {
+        document.getElementById("messages").innerHTML = "";
+      }
+    </script>
+  </body>
+</html>
