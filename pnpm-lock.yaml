@@ -142,6 +142,9 @@ importers:
 
   services/auction-service:
     dependencies:
+      kafkajs:
+        specifier: ^2.2.4
+        version: 2.2.4
       mongoose:
         specifier: ^8.0.0
         version: 8.20.4

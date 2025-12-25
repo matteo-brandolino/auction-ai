@@ -1,7 +1,12 @@
 import type { StringValue } from "ms";
 
 export const validateEnv = (): void => {
-  const required = ["JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "MONGODB_URI"];
+  const required = [
+    "JWT_ACCESS_SECRET",
+    "JWT_REFRESH_SECRET",
+    "MONGODB_URI",
+    "KAFKA_BROKER",
+  ];
 
   const missing = required.filter((key) => !process.env[key]);
 

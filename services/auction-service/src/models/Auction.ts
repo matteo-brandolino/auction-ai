@@ -29,7 +29,7 @@ export interface IAuction extends Document {
 
   // Stats
   totalBids: number;
-  uniqueBidders: number;
+  uniqueBidders: mongoose.Types.ObjectId[];
   viewerCount: number;
 
   createdAt: Date;
@@ -150,9 +150,8 @@ const AuctionSchema = new Schema<IAuction>(
       min: [0, "Total bids cannot be negative"],
     },
     uniqueBidders: {
-      type: Number,
-      default: 0,
-      min: [0, "Unique bidders cannot be negative"],
+      type: [Schema.Types.ObjectId],
+      default: [],
     },
     viewerCount: {
       type: Number,

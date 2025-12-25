@@ -5,6 +5,10 @@ import helmet from "helmet";
 import { connectDB } from "./config/database";
 import { validateEnv } from "./config/env";
 import auctionRoutes from "./routes/auctionRoutes";
+import {
+  initKafkaConsumer,
+  disconnectKafkaConsumer,
+} from "./services/kafka-consumer";
 
 dotenv.config();
 validateEnv();
@@ -50,6 +54,7 @@ app.use("/api/auctions", auctionRoutes);
 const startServer = async () => {
   try {
     await connectDB();
+    await initKafkaConsumer();
 
     app.listen(PORT, () => {
       console.log(`Auction Service running on http://localhost:${PORT}`);
@@ -61,5 +66,18 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+// Graceful shutdown per Kafka Consumer
+process.on("SIGINT", async () => {
+  console.log("Shutting down gracefully...");
+  await disconnectKafkaConsumer();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  console.log("Shutting down gracefully...");
+  await disconnectKafkaConsumer();
+  process.exit(0);
+});
 
 startServer();

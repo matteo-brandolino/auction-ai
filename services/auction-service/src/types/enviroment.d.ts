@@ -18,6 +18,7 @@ declare global {
       JWT_REFRESH_SECRET: string;
       ITEM_SERVICE_URL: string;
       USER_SERVICE_URL: string;
+      KAFKA_BROKER: string;
     }
   }
 }
