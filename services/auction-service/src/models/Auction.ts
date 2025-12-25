@@ -1,33 +1,27 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IAuction extends Document {
-  // Basic info
   title: string;
   description: string;
   itemId: mongoose.Types.ObjectId;
   sellerId: mongoose.Types.ObjectId;
   category: string;
 
-  // Pricing
   startingPrice: number;
   currentPrice: number;
   minIncrement: number;
   reservePrice?: number;
 
-  // Timing
   startTime: Date;
   endTime: Date;
   originalEndTime: Date;
   autoExtendSeconds: number;
 
-  // Status
   status: "draft" | "pending" | "active" | "ended" | "cancelled";
 
-  // Winner
   winnerId?: mongoose.Types.ObjectId;
   winningBidId?: mongoose.Types.ObjectId;
 
-  // Stats
   totalBids: number;
   uniqueBidders: mongoose.Types.ObjectId[];
   viewerCount: number;
@@ -35,7 +29,6 @@ export interface IAuction extends Document {
   createdAt: Date;
   updatedAt: Date;
 
-  // Validator methods
   canBeModified(): boolean;
   canBeDeleted(): boolean;
   canBeStarted(): boolean;
