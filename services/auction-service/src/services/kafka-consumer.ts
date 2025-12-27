@@ -20,14 +20,11 @@ export const initKafkaConsumer = async () => {
   });
 
   await consumer.connect();
-  console.log("✅ Kafka Consumer connected");
 
   await consumer.subscribe({
     topic: "bids",
     fromBeginning: false, // Only process new messages
   });
-
-  console.log("Subscribed to topic: bids");
 
   await consumer.run({
     autoCommit: false, // Manual commit for precise control
@@ -66,8 +63,6 @@ const processBidEvent = async (payload: EachMessagePayload) => {
         offset: (parseInt(message.offset) + 1).toString(),
       },
     ]);
-
-    console.log("✅ Bid processed and offset committed");
   } catch (error) {
     console.error("❌ Error processing bid event:", error);
     // Don't commit offset - message will be reprocessed
@@ -111,7 +106,7 @@ const updateAuctionFromBid = async (bidEvent: {
 
   await auction.save();
 
-  console.log(`📊 Auction ${auctionId} updated:`, {
+  console.log(`Auction ${auctionId} updated:`, {
     currentPrice: auction.currentPrice,
     totalBids: auction.totalBids,
     uniqueBidders: auction.uniqueBidders.length,
@@ -125,6 +120,6 @@ const updateAuctionFromBid = async (bidEvent: {
 export const disconnectKafkaConsumer = async () => {
   if (consumer) {
     await consumer.disconnect();
-    console.log("❌ Kafka Consumer disconnected");
+    console.log("Kafka Consumer disconnected");
   }
 };

@@ -24,6 +24,9 @@ importers:
         specifier: ^9.0.2
         version: 9.0.3
     devDependencies:
+      '@testcontainers/kafka':
+        specifier: ^11.10.0
+        version: 11.10.0
       '@testcontainers/mongodb':
         specifier: ^11.10.0
         version: 11.10.0
@@ -57,6 +60,12 @@ importers:
       jest:
         specifier: ^30.2.0
         version: 30.2.0(@types/node@20.19.27)
+      kafkajs:
+        specifier: ^2.2.4
+        version: 2.2.4
+      mongoose:
+        specifier: ^8.20.4
+        version: 8.20.4
       nodemon:
         specifier: ^3.0.2
         version: 3.1.11
@@ -1475,6 +1484,9 @@ packages:
 
   '@tailwindcss/postcss@4.1.18':
     resolution: {integrity: sha512-Ce0GFnzAOuPyfV5SxjXGn0CubwGcuDB0zcdaPuCSzAa/2vII24JTkH+I6jcbXLb1ctjZMZZI6OjDaLPJQL1S0g==}
+
+  '@testcontainers/kafka@11.10.0':
+    resolution: {integrity: sha512-E4T31nQPHsOA528y2Sca3sHik7ligO2L2q3k6wOUGE17eD1fUrxgE0DCKZmM/LJyZwp2CWXIa3RJHNvbhsNLjQ==}
 
   '@testcontainers/mongodb@11.10.0':
     resolution: {integrity: sha512-PfnM+0UWddjzIhTgmYumyvt5tA0GiZ4uTf/SFEhmtRDcmBM70oZvQBdwDeYp7nMjkmxJFATPAXSR1Px7418bAg==}
@@ -5742,6 +5754,16 @@ snapshots:
       '@tailwindcss/oxide': 4.1.18
       postcss: 8.5.6
       tailwindcss: 4.1.18
+
+  '@testcontainers/kafka@11.10.0':
+    dependencies:
+      compare-versions: 6.1.1
+      testcontainers: 11.10.0
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - react-native-b4a
+      - supports-color
 
   '@testcontainers/mongodb@11.10.0':
     dependencies:
