@@ -1,91 +1,58 @@
-import { WebSocket, WebSocketServer } from "ws";
-import { NotificationPayload, WebSocketClient } from "../types/notifications";
+import { Server } from "socket.io";
+import { NotificationPayload } from "../types/notifications";
+import http from "http";
 
-const clients = new Map<string, WebSocketClient>();
-
-let wss: WebSocketServer | null = null;
+let io: Server | null = null;
 
 export const initWebSocketServer = (port: number) => {
-  wss = new WebSocketServer({ port });
+  const httpServer = http.createServer();
 
-  wss.on("connection", (ws: WebSocket, req) => {
-    const clientId = generateClientId();
-
-    console.log(`🔌 Client connected: ${clientId}`);
-
-    clients.set(clientId, { id: clientId, ws });
-
-    // Handle authentication message
-    ws.on("message", (message: string) => {
-      try {
-        const data = JSON.parse(message.toString());
-
-        if (data.type === "AUTH" && data.userId) {
-          const client = clients.get(clientId);
-          if (client) {
-            client.userId = data.userId;
-            console.log(
-              `✅ Client ${clientId} authenticated as user ${data.userId}`
-            );
-          }
-        }
-      } catch (error) {
-        console.error("Error parsing client message:", error);
-      }
-    });
-
-    ws.on("close", () => {
-      clients.delete(clientId);
-      console.log(`❌ Client disconnected: ${clientId}`);
-    });
-
-    ws.send(
-      JSON.stringify({
-        type: "CONNECTED",
-        clientId,
-        message: "Connected to BidWars notifications",
-      })
-    );
+  io = new Server(httpServer, {
+    cors: {
+      origin: ["http://localhost:3001", "http://localhost:3000"], // 👈 CORS fix
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
   });
 
+  io.on("connection", (socket) => {
+    console.log(`🔌 Client connected: ${socket.id}`);
+
+    // Join auction room
+    socket.on("join-auction", (auctionId: string) => {
+      socket.join(`auction-${auctionId}`);
+      console.log(`✅ Client ${socket.id} joined auction ${auctionId}`);
+    });
+
+    // Leave auction room
+    socket.on("leave-auction", (auctionId: string) => {
+      socket.leave(`auction-${auctionId}`);
+      console.log(`❌ Client ${socket.id} left auction ${auctionId}`);
+    });
+
+    socket.on("disconnect", () => {
+      console.log(`❌ Client disconnected: ${socket.id}`);
+    });
+  });
+
+  httpServer.listen(port);
   console.log(`📡 WebSocket server running on port ${port}`);
 };
-
 export const sendNotification = (notification: NotificationPayload) => {
-  const message = JSON.stringify(notification);
+  if (!io) return;
 
-  if (notification.userId) {
-    // Send to specific user
-    let sent = 0;
-    clients.forEach((client) => {
-      if (
-        client.userId === notification.userId &&
-        client.ws.readyState === WebSocket.OPEN
-      ) {
-        client.ws.send(message);
-        sent++;
-      }
-    });
-    console.log(
-      `📤 Notification sent to user ${notification.userId} (${sent} connections)`
+  const auctionId = notification.data.auctionId; // 👈 Dentro data!
+
+  if (auctionId) {
+    // Send to specific auction room
+    io.to(`auction-${auctionId}`).emit(
+      notification.type.toLowerCase(),
+      notification
     );
+    console.log(`📤 Notification sent to auction ${auctionId}`);
   } else {
-    // or broadcast to all
-    let sent = 0;
-    clients.forEach((client) => {
-      if (client.ws.readyState === WebSocket.OPEN) {
-        client.ws.send(message);
-        sent++;
-      }
-    });
-    console.log(`📡 Notification broadcast to ${sent} clients`);
+    // Broadcast to all
+    io.emit(notification.type.toLowerCase(), notification);
+    console.log(`📡 Notification broadcast`);
   }
-};
-
-const generateClientId = (): string => {
-  return `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-};
-
-export const getConnectedClientsCount = (): number => {
-  return clients.size;
 };

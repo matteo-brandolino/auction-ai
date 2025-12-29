@@ -7,7 +7,11 @@
   },
   "dependencies": {
     "dotenv": "^16.0.0",
-    "ws": "^8.18.0",
-    "kafkajs": "^2.2.4"
+    "kafkajs": "^2.2.4",
+    "socket.io": "^4.8.3",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/socket.io": "^3.0.2"
   }
 }

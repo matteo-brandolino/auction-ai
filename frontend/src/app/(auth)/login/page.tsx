@@ -12,36 +12,55 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const params = await searchParams;
   async function handleLogin(formData: FormData) {
     "use server";
 
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: "/dashboard",
-    });
+
+    try {
+      await signIn("credentials", {
+        email,
+        password,
+        redirectTo: "/dashboard",
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+        throw error;
+      }
+      redirect("/login?error=credentials");
+    }
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Accedi ad AuctionAI</CardTitle>
+        <CardTitle>Welcome to BidWars</CardTitle>
         <CardDescription>
-          Inserisci le tue credenziali per accedere
+          Sign in to start bidding
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form action={handleLogin} className="space-y-4">
+          {params.error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+              Invalid email or password
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="email@esempio.com"
+              placeholder="email@example.com"
               required
             />
           </div>
@@ -58,16 +77,13 @@ export default function LoginPage() {
           </div>
 
           <Button type="submit" className="w-full">
-            Accedi
+            Sign In
           </Button>
 
-          <p
-            className="text-sm text-center 
-  text-gray-600"
-          >
-            Non hai un account?{" "}
+          <p className="text-sm text-center text-gray-600">
+            Don't have an account?{" "}
             <Link href="/register" className="text-blue-600 hover:underline">
-              Registrati
+              Sign Up
             </Link>
           </p>
         </form>

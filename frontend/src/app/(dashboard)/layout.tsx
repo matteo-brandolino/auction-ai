@@ -46,36 +46,27 @@ export default async function DashboardLayout({
   items-center h-16"
           >
             <div className="flex items-center">
-              <h1
-                className="text-2xl font-bold 
-  text-gray-900"
-              >
-                AuctionAI
+              <h1 className="text-2xl font-bold text-gray-900">
+                BidWars
               </h1>
               <nav className="ml-10 flex space-x-4">
                 <Link
                   href="/dashboard"
-                  className="text-gray-700 
-  hover:text-gray-900 px-3 py-2 rounded-md text-sm 
-  font-medium"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Dashboard
                 </Link>
                 <Link
-                  href="/dashboard/immobili"
-                  className="text-gray-700 
-  hover:text-gray-900 px-3 py-2 rounded-md text-sm 
-  font-medium"
+                  href="/dashboard/auctions"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  Immobili
+                  Live Auctions
                 </Link>
                 <Link
-                  href="/dashboard/preferiti"
-                  className="text-gray-700 
-  hover:text-gray-900 px-3 py-2 rounded-md text-sm 
-  font-medium"
+                  href="/dashboard/leaderboard"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  Preferiti
+                  Leaderboard
                 </Link>
               </nav>
             </div>
@@ -116,10 +107,10 @@ export default async function DashboardLayout({
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/profilo">Profilo</Link>
+                  <Link href="/dashboard/profile">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/impostazioni">Impostazioni</Link>
+                  <Link href="/dashboard/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <LogoutButton />

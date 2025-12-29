@@ -176,8 +176,9 @@ export const getBidsForAuction = async (
 
     res.status(200).json({
       bids: bids.map((bid) => ({
-        id: bid._id,
-        bidderId: bid.bidderId,
+        id: bid._id.toString(),
+        auctionId: bid.auctionId.toString(),
+        bidderId: bid.bidderId.toString(),
         amount: bid.amount,
         timestamp: bid.timestamp,
         status: bid.status,

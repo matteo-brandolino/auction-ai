@@ -22,7 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           });
 
           return {
-            id: response.user._id,
+            id: response.user.id,
             email: response.user.email,
             name: response.user.name,
             role: response.user.role,

@@ -65,30 +65,17 @@ const processEvent = async (payload: EachMessagePayload) => {
 
 const handleBidEvent = async (event: any) => {
   if (event.eventType === "BID_PLACED") {
-    const { auctionId, bidderId, amount } = event;
-
-    // Notification for the bidder (confirmation)
-    const bidderNotification: NotificationPayload = {
-      type: "BID_PLACED",
-      userId: bidderId,
-      data: {
-        auctionId,
-        message: `Your bid of $${amount} was placed successfully`,
-        amount,
-      },
-      timestamp: new Date(),
-    };
-
-    sendNotification(bidderNotification);
+    const { auctionId, bidderId, amount, bidId } = event;
 
     // Broadcast to all watching the auction (real-time updates)
     const broadcastNotification: NotificationPayload = {
       type: "BID_PLACED",
       data: {
         auctionId,
-        message: `New bid: $${amount}`,
-        amount,
         bidderId,
+        amount,
+        bidId: bidId || `temp-${Date.now()}`,
+        message: `New bid: $${amount}`,
       },
       timestamp: new Date(),
     };
