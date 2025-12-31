@@ -17,6 +17,8 @@ export const emitAuctionEndedEvent = async (auction: {
   id: string;
   title: string;
   winnerId?: string;
+  winnerName?: string;
+  winnerEmail?: string;
   finalPrice: number;
   totalBids: number;
   endTime: Date;
@@ -31,6 +33,8 @@ export const emitAuctionEndedEvent = async (auction: {
     auctionId: auction.id,
     title: auction.title,
     winnerId: auction.winnerId || null,
+    winnerName: auction.winnerName || null,
+    winnerEmail: auction.winnerEmail || null,
     finalPrice: auction.finalPrice,
     totalBids: auction.totalBids,
     endTime: auction.endTime,

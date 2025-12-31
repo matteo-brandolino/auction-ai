@@ -58,6 +58,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const tokenPayload = {
       userId: user._id.toString(),
+      name: user.name,
       email: user.email,
       role: user.role,
     };
@@ -98,6 +99,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const tokenPayload = {
       userId: user._id.toString(),
+      name: user.name,
       email: user.email,
       role: user.role,
     };
@@ -136,6 +138,7 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
 
     const tokenPayload = {
       userId: user._id.toString(),
+      name: user.name,
       email: user.email,
       role: user.role,
     };

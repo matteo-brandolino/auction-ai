@@ -138,6 +138,33 @@ export class ApiClient {
       }
     );
   }
+
+  async getTopBidders(token: string, limit?: number): Promise<{ leaderboard: any[] }> {
+    const query = limit ? `?limit=${limit}` : "";
+    return this.request<{ leaderboard: any[] }>(`/api/leaderboard/top-bidders${query}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  async getMostActiveToday(token: string, limit?: number): Promise<{ leaderboard: any[] }> {
+    const query = limit ? `?limit=${limit}` : "";
+    return this.request<{ leaderboard: any[] }>(`/api/leaderboard/most-active-today${query}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  async getBiggestWins(token: string, limit?: number): Promise<{ leaderboard: any[] }> {
+    const query = limit ? `?limit=${limit}` : "";
+    return this.request<{ leaderboard: any[] }>(`/api/leaderboard/biggest-wins${query}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  async getMyRanking(token: string): Promise<any> {
+    return this.request<any>("/api/leaderboard/my-ranking", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
 }
 
 export const apiClient = new ApiClient();

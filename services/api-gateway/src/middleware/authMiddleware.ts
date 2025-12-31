@@ -7,6 +7,7 @@ declare global {
     interface Request {
       user?: {
         userId: string;
+        name: string;
         email: string;
         role: string;
       };
@@ -40,12 +41,13 @@ export const authMiddleware = (
       issuer: "auctionai-platform",
       audience: "auctionai-users",
       algorithms: ["HS256"],
-    }) as { userId: string; email: string; role: string };
+    }) as { userId: string; name: string; email: string; role: string };
 
     req.user = decodedUser;
 
-    //custom headers for user service
+    //custom headers for services
     req.headers["x-user-id"] = decodedUser.userId;
+    req.headers["x-user-name"] = decodedUser.name;
     req.headers["x-user-email"] = decodedUser.email;
     req.headers["x-user-role"] = decodedUser.role;
 

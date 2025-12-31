@@ -99,6 +99,8 @@ export const placeBid = async (req: Request, res: Response): Promise<void> => {
       bidId: bid._id.toString(),
       auctionId: auctionId,
       bidderId: userId,
+      bidderName: req.user?.name || "",
+      bidderEmail: req.user?.email || "",
       amount: amount,
       timestamp: bid.timestamp,
     });

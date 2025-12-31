@@ -55,10 +55,36 @@ const checkAndCloseExpiredAuctions = async () => {
         { $set: { status: "ended" } }
       );
 
+      let winnerName: string | undefined;
+      let winnerEmail: string | undefined;
+
+      if (auction.winnerId) {
+        try {
+          const userResponse = await fetch(
+            `${process.env.USER_SERVICE_URL}/api/users/${auction.winnerId}`,
+            {
+              headers: {
+                "x-internal-service": "auction-service",
+              },
+            }
+          );
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            winnerName = userData.user?.name;
+            winnerEmail = userData.user?.email;
+          }
+        } catch (error) {
+          console.error(`Failed to fetch winner details for ${auction.winnerId}:`, error);
+        }
+      }
+
       await emitAuctionEndedEvent({
         id: auction._id.toString(),
         title: auction.title,
         winnerId: auction.winnerId?.toString(),
+        winnerName,
+        winnerEmail,
         finalPrice: auction.currentPrice,
         totalBids: auction.totalBids,
         endTime: auction.endTime,

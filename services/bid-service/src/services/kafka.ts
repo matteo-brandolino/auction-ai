@@ -18,6 +18,8 @@ export const publishBidEvent = async (bidData: {
   bidId: string;
   auctionId: string;
   bidderId: string;
+  bidderName: string;
+  bidderEmail: string;
   amount: number;
   timestamp: Date;
 }) => {
