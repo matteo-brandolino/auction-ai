@@ -68,8 +68,7 @@ export function AuctionRoomClient({
         setBidAmount(amount + auction.minIncrement);
       }
     },
-    onAuctionEnded: (data) => {
-    },
+    onAuctionEnded: (data) => {},
   });
 
   async function handlePlaceBid() {
@@ -97,7 +96,8 @@ export function AuctionRoomClient({
 
   const isWinning = auction.winnerId === userId;
   const minBid = auction.currentPrice + auction.minIncrement;
-  const isEnded = new Date(auction.endTime) < new Date() || auction.status === 'ended';
+  const isEnded =
+    new Date(auction.endTime) < new Date() || auction.status === "ended";
 
   return (
     <div className="space-y-6">
@@ -158,7 +158,7 @@ export function AuctionRoomClient({
                 <div>
                   <p className="text-gray-500">Unique Bidders</p>
                   <p className="text-xl font-semibold mt-1">
-                    {auction.uniqueBidders.length}
+                    {auction.uniqueBidders ? auction.uniqueBidders.length : 0}
                   </p>
                 </div>
               </div>
@@ -254,7 +254,11 @@ export function AuctionRoomClient({
                 disabled={isSubmitting || bidAmount < minBid || isEnded}
                 className="w-full bg-violet-600 hover:bg-violet-700 text-lg h-12 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isEnded ? "Auction Ended" : isSubmitting ? "Placing..." : `Place Bid $${bidAmount}`}
+                {isEnded
+                  ? "Auction Ended"
+                  : isSubmitting
+                  ? "Placing..."
+                  : `Place Bid $${bidAmount}`}
               </Button>
 
               <div className="pt-4 border-t space-y-3 text-sm">

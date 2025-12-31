@@ -9,6 +9,14 @@ import {
   initKafkaConsumer,
   disconnectKafkaConsumer,
 } from "./services/kafka-consumer";
+import {
+  initKafkaProducer,
+  disconnectKafkaProducer,
+} from "./services/kafka-producer";
+import {
+  startAuctionScheduler,
+  stopAuctionScheduler,
+} from "./services/auction-scheduler";
 
 dotenv.config();
 validateEnv();
@@ -54,12 +62,12 @@ app.use("/api/auctions", auctionRoutes);
 const startServer = async () => {
   try {
     await connectDB();
+    await initKafkaProducer();
     await initKafkaConsumer();
+    startAuctionScheduler();
 
     app.listen(PORT, () => {
       console.log(`Auction Service running on http://localhost:${PORT}`);
-      console.log(`Database: bidwars-auctions`);
-      console.log(`Environment: ${process.env.NODE_ENV}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
@@ -67,17 +75,14 @@ const startServer = async () => {
   }
 };
 
-// Graceful shutdown per Kafka Consumer
-process.on("SIGINT", async () => {
-  console.log("Shutting down gracefully...");
+const shutdown = async () => {
+  stopAuctionScheduler();
   await disconnectKafkaConsumer();
+  await disconnectKafkaProducer();
   process.exit(0);
-});
+};
 
-process.on("SIGTERM", async () => {
-  console.log("Shutting down gracefully...");
-  await disconnectKafkaConsumer();
-  process.exit(0);
-});
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
 
 startServer();

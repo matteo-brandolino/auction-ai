@@ -51,6 +51,13 @@ export const createItem = async (
     });
   } catch (error: any) {
     console.error("CreateItem error:", error);
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors)
+        .map((err: any) => err.message)
+        .join(", ");
+      res.status(400).json({ error: messages });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 };

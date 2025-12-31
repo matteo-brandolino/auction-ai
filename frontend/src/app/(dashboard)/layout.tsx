@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogoutButton } from "@/components/logout-button";
+import { AuthSessionProvider } from "@/components/session-provider";
 
 export default async function DashboardLayout({
   children,
@@ -31,7 +32,8 @@ export default async function DashboardLayout({
       .toUpperCase() || "U";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AuthSessionProvider>
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header
         className="bg-white border-b border-gray-200
@@ -55,6 +57,18 @@ export default async function DashboardLayout({
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Dashboard
+                </Link>
+                <Link
+                  href="/dashboard/items"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  My Items
+                </Link>
+                <Link
+                  href="/dashboard/my-auctions"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  My Auctions
                 </Link>
                 <Link
                   href="/dashboard/auctions"
@@ -127,5 +141,6 @@ export default async function DashboardLayout({
         {children}
       </main>
     </div>
+    </AuthSessionProvider>
   );
 }

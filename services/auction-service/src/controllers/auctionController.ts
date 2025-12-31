@@ -9,6 +9,7 @@ import {
   validateAuctionTiming,
 } from "../utils/auctionValidation";
 import { ItemResponse, ItemUpdateResponse } from "../types/item";
+import { activateAuction } from "../services/auction-lifecycle";
 
 // POST /api/auctions - Create auction
 export const createAuction = async (
@@ -173,6 +174,13 @@ export const createAuction = async (
     });
   } catch (error: any) {
     console.error("CreateAuction error:", error);
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors)
+        .map((err: any) => err.message)
+        .join(", ");
+      res.status(400).json({ error: messages });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -195,11 +203,20 @@ export const listAuctions = async (
     }
 
     if (sellerId && typeof sellerId === "string") {
-      if (!mongoose.Types.ObjectId.isValid(sellerId)) {
-        res.status(400).json({ error: "Invalid seller ID" });
-        return;
+      if (sellerId === "me") {
+        const userId = req.user?.userId;
+        if (!userId) {
+          res.status(401).json({ error: "Unauthorized" });
+          return;
+        }
+        filter.sellerId = userId;
+      } else {
+        if (!mongoose.Types.ObjectId.isValid(sellerId)) {
+          res.status(400).json({ error: "Invalid seller ID" });
+          return;
+        }
+        filter.sellerId = sellerId;
       }
-      filter.sellerId = sellerId;
     }
 
     const auctions = await Auction.find(filter)
@@ -544,18 +561,24 @@ export const startAuction = async (
     if (!checkAuctionOwnership(auction, userId, res)) return;
     if (!checkAuctionCanBeStarted(auction, res)) return;
 
-    auction.status = "active";
-    await auction.save();
+    const success = await activateAuction(id);
+
+    if (!success) {
+      res.status(500).json({ error: "Failed to start auction" });
+      return;
+    }
+
+    const updatedAuction = await Auction.findById(id);
 
     res.status(200).json({
       message: "Auction started successfully",
       auction: {
-        id: auction._id,
-        title: auction.title,
-        status: auction.status,
-        startTime: auction.startTime,
-        endTime: auction.endTime,
-        currentPrice: auction.currentPrice,
+        id: updatedAuction?._id,
+        title: updatedAuction?.title,
+        status: updatedAuction?.status,
+        startTime: updatedAuction?.startTime,
+        endTime: updatedAuction?.endTime,
+        currentPrice: updatedAuction?.currentPrice,
       },
     });
   } catch (error) {

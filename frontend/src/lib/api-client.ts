@@ -6,13 +6,13 @@ import type {
 } from "@/types/auth";
 
 import type { Auction, Bid } from "@/types/auction";
+import type { Item, CreateItemData, CreateAuctionData } from "@/types/item";
 
 export class ApiClient {
   private baseUrl: string;
 
   constructor() {
     this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-    console.log("[ApiClient] baseUrl:", this.baseUrl);
   }
 
   async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -27,8 +27,20 @@ export class ApiClient {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || `Api request ${this.baseUrl} failed`);
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (parseError) {
+        console.error(
+          `API Error [${response.status}] ${endpoint}: Failed to parse error response`
+        );
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      console.error(`API Error [${response.status}] ${endpoint}:`, errorData);
+      const errorMessage =
+        errorData.message || errorData.error || JSON.stringify(errorData);
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -78,6 +90,53 @@ export class ApiClient {
 
   async getBidsByAuction(auctionId: string): Promise<Bid[]> {
     return this.request<Bid[]>(`/api/bids/auction/${auctionId}`);
+  }
+
+  async getItems(token: string): Promise<{ items: Item[] }> {
+    return this.request<{ items: Item[] }>("/api/items", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  async createItem(
+    data: CreateItemData,
+    token: string
+  ): Promise<{ item: Item }> {
+    return this.request<{ item: Item }>("/api/items", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  async createAuction(
+    data: CreateAuctionData,
+    token: string
+  ): Promise<{ auction: Auction }> {
+    return this.request<{ auction: Auction }>("/api/auctions", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  async getMyAuctions(token: string): Promise<{ auctions: Auction[] }> {
+    return this.request<{ auctions: Auction[] }>("/api/auctions?sellerId=me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  async publishAuction(
+    auctionId: string,
+    token: string
+  ): Promise<{ message: string; auction: Auction }> {
+    return this.request<{ message: string; auction: Auction }>(
+      `/api/auctions/${auctionId}/publish`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
   }
 }
 

@@ -91,6 +91,16 @@ export default async function DashboardPage() {
             <CardDescription>What would you like to do?</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
+            <Link href="/dashboard/items/new">
+              <Button variant="outline" className="w-full justify-start">
+                Create New Item
+              </Button>
+            </Link>
+            <Link href="/dashboard/auctions/new">
+              <Button variant="outline" className="w-full justify-start">
+                Create New Auction
+              </Button>
+            </Link>
             <Link href="/dashboard/auctions">
               <Button variant="outline" className="w-full justify-start">
                 Browse Live Auctions

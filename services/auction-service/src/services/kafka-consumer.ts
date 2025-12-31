@@ -88,6 +88,29 @@ const updateAuctionFromBid = async (bidEvent: {
     return;
   }
 
+  // Check if auction has ended (endTime in the past)
+  const now = new Date();
+  const hasEnded = auction.endTime < now;
+
+  if (hasEnded && auction.status === "active") {
+    console.log(`🏁 Auction ${auctionId} has ended - auto-closing`);
+
+    // Close the auction
+    auction.status = "ended";
+    await auction.save();
+
+    console.log(`✅ Auction ${auctionId} closed:`, {
+      endTime: auction.endTime,
+      finalPrice: auction.currentPrice,
+      winnerId: auction.winnerId?.toString() || "No winner",
+      totalBids: auction.totalBids,
+    });
+
+    // Note: Bid that arrived after end time is not processed
+    console.warn(`⚠️ Bid ${bidEvent.bidId} arrived after auction ended - rejected`);
+    return;
+  }
+
   if (auction.status !== "active") {
     console.warn(
       `⚠️ Auction ${auctionId} is ${auction.status} - skipping update`
@@ -95,6 +118,7 @@ const updateAuctionFromBid = async (bidEvent: {
     return;
   }
 
+  // Auction is active and not ended - process bid normally
   auction.currentPrice = amount;
   auction.totalBids += 1;
   const bidderObjectId = new mongoose.Types.ObjectId(bidderId);
@@ -106,7 +130,7 @@ const updateAuctionFromBid = async (bidEvent: {
 
   await auction.save();
 
-  console.log(`Auction ${auctionId} updated:`, {
+  console.log(`✅ Auction ${auctionId} updated:`, {
     currentPrice: auction.currentPrice,
     totalBids: auction.totalBids,
     uniqueBidders: auction.uniqueBidders.length,
