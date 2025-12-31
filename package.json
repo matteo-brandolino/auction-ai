@@ -16,8 +16,9 @@
     "dev:auction": "pnpm --filter auction-service dev",
     "dev:bid": "pnpm --filter bid-service dev",
     "dev:notification": "pnpm --filter notification-service dev",
+    "dev:leaderboard": "pnpm --filter leaderboard-service dev",
     "build:all": "pnpm -r run build",
-    "dev:all": "concurrently -n \"GATEWAY,USER,ITEM,AUCTION,BID,NOTIF\" -c \"blue,green,yellow,magenta,cyan,grey\" \"pnpm dev:gateway\" \"pnpm dev:user\" \"pnpm dev:item\" \"pnpm dev:auction\" \"pnpm dev:bid\" \"pnpm dev:notification\""
+    "dev:all": "concurrently -n \"GATEWAY,USER,ITEM,AUCTION,BID,NOTIF,LEADER\" -c \"blue,green,yellow,magenta,cyan,grey,white\" \"pnpm dev:gateway\" \"pnpm dev:user\" \"pnpm dev:item\" \"pnpm dev:auction\" \"pnpm dev:bid\" \"pnpm dev:notification\" \"pnpm dev:leaderboard\""
   },
   "devDependencies": {
     "@testcontainers/kafka": "^11.10.0",
