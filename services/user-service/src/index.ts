@@ -6,6 +6,11 @@ import { connectDB } from "./config/database";
 import { validateEnv } from "./config/env";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
+import achievementRoutes from "./routes/achievementRoutes";
+import {
+  initKafkaProducer,
+  disconnectKafkaProducer,
+} from "./services/kafka-producer";
 
 dotenv.config();
 validateEnv();
@@ -43,10 +48,12 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/achievements", achievementRoutes);
 
 const startServer = async () => {
   try {
     await connectDB();
+    await initKafkaProducer();
 
     app.listen(PORT, () => {
       console.log(`User Service running on http://localhost:${PORT}`);
@@ -57,5 +64,17 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+process.on("SIGINT", async () => {
+  console.log("Shutting down gracefully...");
+  await disconnectKafkaProducer();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  console.log("Shutting down gracefully...");
+  await disconnectKafkaProducer();
+  process.exit(0);
+});
 
 startServer();

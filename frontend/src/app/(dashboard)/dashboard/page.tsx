@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   Card,
@@ -9,16 +10,56 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+async function getUserStats(token: string) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+  try {
+    const [userRes, rankingRes, auctionsRes] = await Promise.all([
+      fetch(`${apiUrl}/api/users/me`, {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${apiUrl}/api/leaderboard/my-ranking`, {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${apiUrl}/api/auctions?status=active`, {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ]);
+
+    const [userData, rankingData, auctionsData] = await Promise.all([
+      userRes.ok ? userRes.json() : { user: null },
+      rankingRes.ok ? rankingRes.json() : null,
+      auctionsRes.ok ? auctionsRes.json() : { auctions: [] },
+    ]);
+
+    return {
+      credits: userData.user?.credits || 0,
+      activeBids: rankingData?.userStats?.activeAuctions?.length || 0,
+      auctionsWon: rankingData?.userStats?.auctionsWon || 0,
+      liveAuctions: auctionsData.auctions?.length || 0,
+    };
+  } catch (error) {
+    console.error("Error fetching user stats:", error);
+    return {
+      credits: 0,
+      activeBids: 0,
+      auctionsWon: 0,
+      liveAuctions: 0,
+    };
+  }
+}
+
 export default async function DashboardPage() {
   const session = await auth();
 
-  // TODO: Fetch real stats from backend
-  const stats = {
-    credits: 10000,
-    activeBids: 0,
-    auctionsWon: 0,
-    liveAuctions: 0,
-  };
+  if (!session?.accessToken) {
+    redirect("/login");
+  }
+
+  const stats = await getUserStats(session.accessToken);
 
   return (
     <div className="space-y-6">

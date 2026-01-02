@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogoutButton } from "@/components/logout-button";
 import { AuthSessionProvider } from "@/components/session-provider";
+import { Toaster } from "sonner";
+import { AchievementListener } from "@/components/achievement-listener";
 
 export default async function DashboardLayout({
   children,
@@ -33,6 +35,8 @@ export default async function DashboardLayout({
 
   return (
     <AuthSessionProvider>
+      <Toaster richColors position="top-right" />
+      <AchievementListener />
       <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header

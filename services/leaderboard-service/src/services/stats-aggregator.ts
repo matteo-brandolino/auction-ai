@@ -1,4 +1,5 @@
 import { UserStats } from "../models/UserStats";
+import { checkAchievements, notifyAchievementUnlocked } from "./achievement-checker";
 
 const isToday = (date: Date): boolean => {
   const today = new Date();
@@ -53,6 +54,11 @@ export const handleBidPlaced = async (bidEvent: {
     }
 
     await userStats.save();
+
+    const achievements = await checkAchievements(bidderId);
+    for (const achievement of achievements) {
+      await notifyAchievementUnlocked(achievement);
+    }
 
     console.log(`Updated stats for user ${bidderName}: ${userStats.totalBids} total bids`);
   } catch (error) {

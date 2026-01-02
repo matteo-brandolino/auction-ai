@@ -17,11 +17,11 @@ export const initKafkaConsumer = async () => {
   await consumer.connect();
 
   await consumer.subscribe({
-    topics: ["bids"], // TODO: Add more topics as needed: ["bids", "auctions"...]
+    topics: ["bids", "achievements"],
     fromBeginning: false,
   });
 
-  console.log("Subscribed to topics: bids");
+  console.log("Subscribed to topics: bids, achievements");
 
   await consumer.run({
     autoCommit: false,
@@ -46,6 +46,8 @@ const processEvent = async (payload: EachMessagePayload) => {
 
     if (topic === "bids") {
       await handleBidEvent(event);
+    } else if (topic === "achievements") {
+      await handleAchievementEvent(event);
     }
 
     // Commit offset after successful processing
@@ -67,7 +69,6 @@ const handleBidEvent = async (event: any) => {
   if (event.eventType === "BID_PLACED") {
     const { auctionId, bidderId, amount, bidId } = event;
 
-    // Broadcast to all watching the auction (real-time updates)
     const broadcastNotification: NotificationPayload = {
       type: "BID_PLACED",
       data: {
@@ -81,6 +82,34 @@ const handleBidEvent = async (event: any) => {
     };
 
     sendNotification(broadcastNotification);
+  }
+};
+
+const handleAchievementEvent = async (event: any) => {
+  if (event.eventType === "ACHIEVEMENT_UNLOCKED") {
+    const {
+      userId,
+      achievementId,
+      achievementName,
+      achievementDescription,
+      achievementIcon,
+      achievementPoints,
+    } = event;
+
+    const notification: NotificationPayload = {
+      type: "ACHIEVEMENT_UNLOCKED",
+      data: {
+        userId,
+        achievementId,
+        name: achievementName,
+        description: achievementDescription,
+        icon: achievementIcon,
+        points: achievementPoints,
+      },
+      timestamp: new Date(),
+    };
+
+    sendNotification(notification);
   }
 };
 

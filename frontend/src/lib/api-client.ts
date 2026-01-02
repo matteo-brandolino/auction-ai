@@ -165,6 +165,18 @@ export class ApiClient {
       headers: { Authorization: `Bearer ${token}` },
     });
   }
+
+  async getMe(token: string): Promise<{ user: any }> {
+    return this.request<{ user: any }>("/api/users/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  async getMyAchievements(token: string): Promise<{ achievements: any[]; count: number }> {
+    return this.request<{ achievements: any[]; count: number }>("/api/achievements/my", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
