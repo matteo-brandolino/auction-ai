@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/database";
 import { initKafkaConsumer, disconnectKafkaConsumer } from "./services/kafka-consumer";
+import { initRedis, disconnectRedis } from "./config/redis";
 import leaderboardRoutes from "./routes/leaderboardRoutes";
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.get("/health", (req, res) => {
 const startServer = async () => {
   try {
     await connectDB();
+    initRedis();
     await initKafkaConsumer();
 
     app.listen(PORT, () => {
@@ -36,6 +38,7 @@ const startServer = async () => {
 const shutdown = async () => {
   console.log("Shutting down gracefully...");
   await disconnectKafkaConsumer();
+  await disconnectRedis();
   process.exit(0);
 };
 
