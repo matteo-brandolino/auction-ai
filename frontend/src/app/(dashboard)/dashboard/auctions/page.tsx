@@ -10,6 +10,7 @@ import {
 import { CountdownTimer } from "@/components/auction/countdown-timer";
 import type { Auction } from "@/types/auction";
 import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
+import { Landmark, Gem } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -47,55 +48,78 @@ export default async function AuctionsPage() {
   const auctions = await getAuctions(token);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Live Auctions</h2>
-        <p className="text-gray-500">
-          Browse active auctions and place your bids
-        </p>
+    <div className="space-y-6 p-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-1">
+            Live Auctions
+          </h2>
+          <p className="text-slate-400 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+            Browse active auctions and place bids
+          </p>
+        </div>
+        <div className="bg-slate-900 border border-slate-800 rounded-lg px-6 py-3">
+          <div className="text-xs text-slate-400 mb-1">Active Auctions</div>
+          <div className="text-2xl font-bold text-white">{auctions.length}</div>
+        </div>
       </div>
 
       {auctions.length === 0 ? (
-        <Card>
-          <CardContent className="py-10 text-center">
-            <p className="text-gray-500">No active auctions at the moment</p>
-          </CardContent>
-        </Card>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center">
+          <Landmark className="w-16 h-16 mb-4 opacity-20 text-slate-600" />
+          <h3 className="text-2xl font-bold text-white mb-2">No Active Auctions</h3>
+          <p className="text-slate-400 mb-6">Check back soon for new auctions</p>
+          <Link href="/dashboard/auctions/new">
+            <button className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded font-semibold transition-colors">
+              Create Auction
+            </button>
+          </Link>
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {auctions.map((auction) => (
             <Link key={auction.id} href={`/dashboard/auctions/${auction.id}`}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{auction.title}</CardTitle>
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                      🟢 LIVE
-                    </span>
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-slate-700 transition-colors cursor-pointer">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-white line-clamp-1">
+                    {auction.title}
+                  </h3>
+                  <div className="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 rounded-full border border-green-500/20">
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                    <span className="text-xs font-semibold text-green-500">LIVE</span>
                   </div>
-                  <CardDescription className="line-clamp-2">
-                    {auction.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Current Bid:</span>
-                      <span className="font-semibold text-lg text-violet-600">
+                </div>
+
+                <p className="text-sm text-slate-400 line-clamp-2 mb-4">
+                  {auction.description}
+                </p>
+
+                <div className="bg-slate-800 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-slate-400 mb-1">Current Bid</div>
+                      <div className="text-2xl font-bold text-amber-500">
                         ${auction.currentPrice}
-                      </span>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Total Bids:</span>
-                      <span className="font-medium">{auction.totalBids}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Ends in:</span>
+                    <Gem className="w-8 h-8 text-amber-500/50" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-800 rounded p-3">
+                    <div className="text-xs text-slate-400 mb-1">Total Bids</div>
+                    <div className="text-lg font-bold text-white">{auction.totalBids}</div>
+                  </div>
+                  <div className="bg-slate-800 rounded p-3">
+                    <div className="text-xs text-slate-400 mb-1">Ends in</div>
+                    <div className="text-lg font-bold text-white">
                       <CountdownTimer endTime={auction.endTime} />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </Link>
           ))}
         </div>

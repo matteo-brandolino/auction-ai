@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
+import { Coins, Target, Trophy, Zap, Package, Gavel, Flame, TrendingUp, Inbox } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -65,110 +66,130 @@ export default async function DashboardPage() {
   const stats = await getUserStats(token);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 p-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">
-            Welcome, {session?.user.name}!
+          <h2 className="font-display text-4xl font-bold tracking-tight text-white mb-2">
+            Welcome back, {session?.user.name}
           </h2>
-          <p className="text-gray-500">Your BidWars dashboard</p>
+          <p className="text-slate-400">Dashboard Overview</p>
         </div>
         <Link href="/dashboard/auctions">
-          <Button className="bg-violet-600 hover:bg-violet-700">
-            Browse Live Auctions
+          <Button className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 font-semibold rounded flex items-center gap-2">
+            <Flame className="w-4 h-4" />
+            View Auctions
           </Button>
         </Link>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Credits</CardTitle>
-            <CardDescription>Your balance</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-violet-600">
-              {stats.credits.toLocaleString()}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-slate-700 transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <Coins className="w-8 h-8 text-amber-500" />
+            <span className="text-xs font-semibold text-slate-400 uppercase">Balance</span>
+          </div>
+          <div className="text-3xl font-bold text-white mb-1">
+            {stats.credits.toLocaleString()}
+          </div>
+          <div className="text-sm text-slate-400">Credits Available</div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Active Bids</CardTitle>
-            <CardDescription>Currently bidding</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.activeBids}</div>
-          </CardContent>
-        </Card>
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-slate-700 transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <Target className="w-8 h-8 text-indigo-500" />
+            <span className="text-xs font-semibold text-slate-400 uppercase">Active</span>
+          </div>
+          <div className="text-3xl font-bold text-white mb-1">
+            {stats.activeBids}
+          </div>
+          <div className="text-sm text-slate-400">Currently Bidding</div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Auctions Won</CardTitle>
-            <CardDescription>Total victories</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-600">
-              {stats.auctionsWon}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-slate-700 transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <Trophy className="w-8 h-8 text-emerald-500" />
+            <span className="text-xs font-semibold text-slate-400 uppercase">Victories</span>
+          </div>
+          <div className="text-3xl font-bold text-white mb-1">
+            {stats.auctionsWon}
+          </div>
+          <div className="text-sm text-slate-400">Auctions Won</div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Live Auctions</CardTitle>
-            <CardDescription>Active now</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-orange-600">
-              {stats.liveAuctions}
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-slate-700 transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <Zap className="w-8 h-8 text-rose-500" />
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+              <span className="text-xs font-semibold text-slate-400 uppercase">Live</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-3xl font-bold text-white mb-1">
+            {stats.liveAuctions}
+          </div>
+          <div className="text-sm text-slate-400">Active Auctions</div>
+        </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>What would you like to do?</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-white mb-1">Quick Actions</h3>
+            <p className="text-sm text-slate-400">Common tasks</p>
+          </div>
+          <div className="space-y-2">
             <Link href="/dashboard/items/new">
-              <Button variant="outline" className="w-full justify-start">
-                Create New Item
-              </Button>
+              <div className="flex items-center gap-3 p-3 rounded bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer">
+                <Package className="w-5 h-5 text-amber-500" />
+                <div className="flex-1">
+                  <div className="font-semibold text-white text-sm">Create New Item</div>
+                  <div className="text-xs text-slate-400">Add an item to auction</div>
+                </div>
+              </div>
             </Link>
             <Link href="/dashboard/auctions/new">
-              <Button variant="outline" className="w-full justify-start">
-                Create New Auction
-              </Button>
+              <div className="flex items-center gap-3 p-3 rounded bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer">
+                <Gavel className="w-5 h-5 text-indigo-500" />
+                <div className="flex-1">
+                  <div className="font-semibold text-white text-sm">Create New Auction</div>
+                  <div className="text-xs text-slate-400">Start a new auction</div>
+                </div>
+              </div>
             </Link>
             <Link href="/dashboard/auctions">
-              <Button variant="outline" className="w-full justify-start">
-                Browse Live Auctions
-              </Button>
+              <div className="flex items-center gap-3 p-3 rounded bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer">
+                <Flame className="w-5 h-5 text-rose-500" />
+                <div className="flex-1">
+                  <div className="font-semibold text-white text-sm">Browse Live Auctions</div>
+                  <div className="text-xs text-slate-400">Join active auctions</div>
+                </div>
+              </div>
             </Link>
             <Link href="/dashboard/leaderboard">
-              <Button variant="outline" className="w-full justify-start">
-                View Leaderboard
-              </Button>
+              <div className="flex items-center gap-3 p-3 rounded bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer">
+                <TrendingUp className="w-5 h-5 text-emerald-500" />
+                <div className="flex-1">
+                  <div className="font-semibold text-white text-sm">View Leaderboard</div>
+                  <div className="text-xs text-slate-400">Check your ranking</div>
+                </div>
+              </div>
             </Link>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Your latest bids</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-500 text-center py-8">
-              No recent activity. Start bidding!
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-white mb-1">Recent Activity</h3>
+            <p className="text-sm text-slate-400">Your latest bids</p>
+          </div>
+          <div className="flex flex-col items-center justify-center py-16">
+            <Inbox className="w-12 h-12 mb-3 opacity-20 text-slate-600" />
+            <p className="text-sm text-slate-400 text-center">
+              No recent activity yet.<br />
+              <span className="text-slate-300">Start bidding to see your history</span>
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,39 +1,53 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { io, Socket } from "socket.io-client";
+import { Trophy } from "lucide-react";
 
 export function AchievementListener() {
   const { data: session } = useSession();
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     if (!session?.user?.id) return;
 
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3006";
-    const ws = new WebSocket(wsUrl);
+    // Fetch WebSocket token from secure API endpoint
+    fetch("/api/ws-token")
+      .then((res) => res.json())
+      .then((data) => setToken(data.token))
+      .catch((err) => console.error("Failed to get WS token:", err));
+  }, [session?.user?.id]);
 
-    ws.onopen = () => {
+  useEffect(() => {
+    if (!token || !session?.user?.id) return;
+
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3006";
+
+    const socket: Socket = io(wsUrl, {
+      auth: { token },
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+    });
+
+    socket.on("connect", () => {
       console.log("Connected to notification service");
-    };
+    });
 
-    ws.onmessage = (event) => {
+    socket.on("achievement_unlocked", (notification: any) => {
       try {
-        const notification = JSON.parse(event.data);
-
-        if (
-          notification.type === "ACHIEVEMENT_UNLOCKED" &&
-          notification.data.userId === session.user.id
-        ) {
+        if (notification.data.userId === session.user.id) {
           const { icon, name, description, points } = notification.data;
 
           toast.success(
             <div className="flex items-start gap-3">
-              <span className="text-3xl">{icon}</span>
+              <Trophy className="w-8 h-8 text-amber-500" />
               <div className="flex-1">
-                <div className="font-semibold">Achievement Unlocked!</div>
-                <div className="text-sm">{name}</div>
-                <div className="text-xs text-muted-foreground">
+                <div className="font-semibold text-white">Achievement Unlocked!</div>
+                <div className="text-sm text-white">{name}</div>
+                <div className="text-xs text-slate-300">
                   {description} (+{points} pts)
                 </div>
               </div>
@@ -46,20 +60,20 @@ export function AchievementListener() {
       } catch (error) {
         console.error("Error parsing notification:", error);
       }
-    };
+    });
 
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    ws.onclose = () => {
+    socket.on("disconnect", () => {
       console.log("Disconnected from notification service");
-    };
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("WebSocket connection error:", error.message);
+    });
 
     return () => {
-      ws.close();
+      socket.disconnect();
     };
-  }, [session?.user?.id]);
+  }, [token, session?.user?.id]);
 
   return null;
 }
