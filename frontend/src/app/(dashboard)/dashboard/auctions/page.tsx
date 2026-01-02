@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import {
   Card,
@@ -10,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { CountdownTimer } from "@/components/auction/countdown-timer";
 import type { Auction } from "@/types/auction";
+import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 
 async function getAuctions(token: string): Promise<Auction[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
@@ -35,13 +35,14 @@ async function getAuctions(token: string): Promise<Auction[]> {
 }
 
 export default async function AuctionsPage() {
-  const session = await auth();
+  const session = await getServerSession();
+  const token = await getServerAccessToken();
 
-  if (!session?.accessToken) {
+  if (!session || !token) {
     redirect("/login");
   }
 
-  const auctions = await getAuctions(session.accessToken);
+  const auctions = await getAuctions(token);
 
   return (
     <div className="space-y-6">

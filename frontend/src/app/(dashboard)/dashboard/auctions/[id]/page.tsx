@@ -1,7 +1,7 @@
 import { AuctionRoomClient } from "./auction-room-client";
 import type { Auction, Bid } from "@/types/auction";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 
 async function getAuctionData(auctionId: string, token: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
@@ -41,13 +41,15 @@ export default async function AuctionRoomPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await auth();
+  const session = await getServerSession();
+  const token = await getServerAccessToken();
 
-  if (!session?.accessToken) {
+  if (!session || !token) {
     redirect("/login");
   }
+
   const { id } = await params;
-  const data = await getAuctionData(id, session.accessToken);
+  const data = await getAuctionData(id, token);
 
   if (!data) {
     return (
@@ -68,7 +70,6 @@ export default async function AuctionRoomPage({
       initialBids={data.bids}
       auctionId={id}
       userId={session.user.id}
-      accessToken={session.accessToken}
     />
   );
 }

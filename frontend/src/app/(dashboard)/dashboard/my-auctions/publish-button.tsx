@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { apiClient } from "@/lib/api-client";
+import { publishAuctionAction } from "@/app/actions/auction-actions";
 
 interface PublishButtonProps {
   auctionId: string;
@@ -13,12 +12,9 @@ interface PublishButtonProps {
 
 export function PublishButton({ auctionId, auctionTitle }: PublishButtonProps) {
   const router = useRouter();
-  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
 
   const handlePublish = async () => {
-    if (!session?.accessToken) return;
-
     const confirmed = confirm(
       `Publish "${auctionTitle}"?\n\nOnce published, the auction will automatically start at the scheduled time.`
     );
@@ -28,7 +24,7 @@ export function PublishButton({ auctionId, auctionTitle }: PublishButtonProps) {
     setLoading(true);
 
     try {
-      await apiClient.publishAuction(auctionId, session.accessToken);
+      await publishAuctionAction(auctionId);
       router.refresh();
     } catch (error: any) {
       alert(`Failed to publish auction: ${error.message}`);

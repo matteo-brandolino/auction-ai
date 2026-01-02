@@ -27,12 +27,13 @@ export default function NewAuctionPage() {
 
   useEffect(() => {
     const fetchItems = async () => {
-      if (!session?.accessToken) return;
+      if (!session) return;
 
       try {
-        const response = await apiClient.getItems(session.accessToken);
+        const { getItemsAction } = await import("@/app/actions/auction-actions");
+        const response = await getItemsAction();
         const availableItems = response.items.filter(
-          (item) => item.status === "available"
+          (item: Item) => item.status === "available"
         );
         setItems(availableItems);
       } catch (err) {
@@ -62,19 +63,16 @@ export default function NewAuctionPage() {
     }
 
     try {
-      await apiClient.createAuction(
-        {
-          title: formData.get("title") as string,
-          description: formData.get("description") as string,
-          itemId: formData.get("itemId") as string,
-          category: formData.get("category") as string,
-          startingPrice: Number(formData.get("startingPrice")),
-          minIncrement: Number(formData.get("minIncrement")) || 10,
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
-        },
-        session?.accessToken as string
-      );
+      const { createAuctionAction } = await import("@/app/actions/auction-actions");
+      const duration = Math.floor((endTime.getTime() - startTime.getTime()) / (1000 * 60));
+
+      await createAuctionAction({
+        itemId: formData.get("itemId") as string,
+        startingPrice: Number(formData.get("startingPrice")),
+        minIncrement: Number(formData.get("minIncrement")) || 10,
+        startTime: startTime.toISOString(),
+        duration,
+      });
 
       router.push("/dashboard/auctions");
     } catch (err: any) {

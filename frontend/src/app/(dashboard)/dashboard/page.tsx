@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -9,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 
 async function getUserStats(token: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
@@ -53,13 +53,14 @@ async function getUserStats(token: string) {
 }
 
 export default async function DashboardPage() {
-  const session = await auth();
+  const session = await getServerSession();
+  const token = await getServerAccessToken();
 
-  if (!session?.accessToken) {
+  if (!session || !token) {
     redirect("/login");
   }
 
-  const stats = await getUserStats(session.accessToken);
+  const stats = await getUserStats(token);
 
   return (
     <div className="space-y-6">

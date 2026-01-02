@@ -1,5 +1,5 @@
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 import {
   Card,
   CardContent,
@@ -71,15 +71,14 @@ async function getProfileData(token: string) {
 }
 
 export default async function ProfilePage() {
-  const session = await auth();
+  const session = await getServerSession();
+  const token = await getServerAccessToken();
 
-  if (!session?.accessToken) {
+  if (!session || !token) {
     redirect("/login");
   }
 
-  const { user, achievements, count, ranking } = await getProfileData(
-    session.accessToken
-  );
+  const { user, achievements, count, ranking } = await getProfileData(token);
 
   if (!user) {
     return <div>Error loading profile</div>;

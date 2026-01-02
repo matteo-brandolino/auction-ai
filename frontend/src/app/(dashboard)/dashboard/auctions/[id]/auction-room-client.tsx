@@ -21,7 +21,6 @@ interface Props {
   initialBids: Bid[];
   auctionId: string;
   userId: string;
-  accessToken: string;
 }
 
 export function AuctionRoomClient({
@@ -29,7 +28,6 @@ export function AuctionRoomClient({
   initialBids,
   auctionId,
   userId,
-  accessToken,
 }: Props) {
   const { auction, bids, setAuction, setBids, addBid, updateAuctionPrice } =
     useAuctionStore();
@@ -84,7 +82,8 @@ export function AuctionRoomClient({
       setError(null);
       setIsSubmitting(true);
 
-      await apiClient.placeBid(auctionId, bidAmount, accessToken);
+      const { placeBidAction } = await import("@/app/actions/auction-actions");
+      await placeBidAction(auctionId, bidAmount);
     } catch (err: any) {
       setError(err.message || "Failed to place bid");
     } finally {

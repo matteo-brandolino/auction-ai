@@ -1,5 +1,5 @@
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 import {
   Card,
   CardContent,
@@ -58,14 +58,15 @@ async function getLeaderboardData(token: string) {
 }
 
 export default async function LeaderboardPage() {
-  const session = await auth();
+  const session = await getServerSession();
+  const token = await getServerAccessToken();
 
-  if (!session?.accessToken) {
+  if (!session || !token) {
     redirect("/login");
   }
 
   const { topBidders, mostActive, biggestWins, myRanking } =
-    await getLeaderboardData(session.accessToken);
+    await getLeaderboardData(token);
 
   const getMedalIcon = (position: number) => {
     return `#${position + 1}`;

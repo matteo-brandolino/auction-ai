@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import type { Auction } from "@/types/auction";
 import { PublishButton } from "./publish-button";
+import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 
 async function getMyAuctions(token: string): Promise<Auction[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
@@ -34,13 +34,14 @@ async function getMyAuctions(token: string): Promise<Auction[]> {
 }
 
 export default async function MyAuctionsPage() {
-  const session = await auth();
+  const session = await getServerSession();
+  const token = await getServerAccessToken();
 
-  if (!session?.accessToken) {
+  if (!session || !token) {
     redirect("/login");
   }
 
-  const auctions = await getMyAuctions(session.accessToken);
+  const auctions = await getMyAuctions(token);
 
   const getStatusBadge = (status: string) => {
     const badges = {
