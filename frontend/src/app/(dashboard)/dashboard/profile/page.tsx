@@ -10,6 +10,8 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
+export const dynamic = "force-dynamic";
+
 const ACHIEVEMENT_DEFINITIONS = [
   { id: "first_bid", name: "First Bid", description: "Place your first bid", icon: "🎯", tier: "bronze", points: 10 },
   { id: "first_win", name: "First Victory", description: "Win your first auction", icon: "🏆", tier: "bronze", points: 50 },

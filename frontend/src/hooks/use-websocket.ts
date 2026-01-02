@@ -5,21 +5,22 @@ import { wsService } from "@/lib/websocket";
 import type { BidPlacedEvent, WebSocketEvent } from "@/types/auction";
 
 interface UseWebSocketProps {
-  userId: string;
+  token: string;
   auctionId?: string;
   onBidPlaced?: (data: BidPlacedEvent) => void;
   onAuctionEnded?: (data: WebSocketEvent) => void;
 }
 
 export function useWebSocket({
-  userId,
+  token,
   auctionId,
   onBidPlaced,
   onAuctionEnded,
 }: UseWebSocketProps) {
   useEffect(() => {
-    wsService.connect(userId);
-  }, [userId]);
+    if (!token) return;
+    wsService.connect(token);
+  }, [token]);
 
   useEffect(() => {
     if (!auctionId) return;

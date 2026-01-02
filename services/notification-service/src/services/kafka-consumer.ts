@@ -1,6 +1,7 @@
 import { Kafka, Consumer, EachMessagePayload } from "kafkajs";
 import { sendNotification } from "./websocket";
 import { NotificationPayload } from "../types/notifications";
+import { ProcessedMessage } from "../models/ProcessedMessage";
 
 let consumer: Consumer | null = null;
 
@@ -35,6 +36,21 @@ const processEvent = async (payload: EachMessagePayload) => {
   const { topic, partition, message } = payload;
 
   try {
+    const messageId = `${topic}-${partition}-${message.offset}`;
+
+    const existingMessage = await ProcessedMessage.findOne({ messageId });
+    if (existingMessage) {
+      console.log(`⏭️ Message ${messageId} already processed - skipping`);
+      await consumer?.commitOffsets([
+        {
+          topic,
+          partition,
+          offset: (parseInt(message.offset) + 1).toString(),
+        },
+      ]);
+      return;
+    }
+
     const event = JSON.parse(message.value?.toString() || "{}");
 
     console.log("Received event:", {
@@ -50,7 +66,11 @@ const processEvent = async (payload: EachMessagePayload) => {
       await handleAchievementEvent(event);
     }
 
-    // Commit offset after successful processing
+    await ProcessedMessage.create({
+      messageId,
+      topic,
+    });
+
     await consumer?.commitOffsets([
       {
         topic,

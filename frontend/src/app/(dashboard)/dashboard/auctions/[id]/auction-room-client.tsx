@@ -21,6 +21,7 @@ interface Props {
   initialBids: Bid[];
   auctionId: string;
   userId: string;
+  token: string;
 }
 
 export function AuctionRoomClient({
@@ -28,6 +29,7 @@ export function AuctionRoomClient({
   initialBids,
   auctionId,
   userId,
+  token,
 }: Props) {
   const { auction, bids, setAuction, setBids, addBid, updateAuctionPrice } =
     useAuctionStore();
@@ -43,7 +45,7 @@ export function AuctionRoomClient({
   }, [initialAuction, initialBids, setAuction, setBids]);
 
   useWebSocket({
-    userId,
+    token,
     auctionId,
     onBidPlaced: (event: any) => {
       const { auctionId: eventAuctionId, amount, bidderId, bidId } = event.data;

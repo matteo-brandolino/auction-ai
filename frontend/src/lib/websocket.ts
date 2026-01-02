@@ -9,21 +9,29 @@ class WebSocketService {
     this.url = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:3005";
   }
 
-  connect(userId: string): Socket {
+  connect(token: string): Socket {
     if (this.socket?.connected) {
       return this.socket;
     }
 
     this.socket = io(this.url, {
-      auth: { userId },
+      auth: { token },
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
     });
 
-    this.socket.on("connect", () => {});
-    this.socket.on("disconnect", () => {});
-    this.socket.on("error", () => {});
+    this.socket.on("connect", () => {
+      console.log("✅ WebSocket connected");
+    });
+
+    this.socket.on("disconnect", () => {
+      console.log("❌ WebSocket disconnected");
+    });
+
+    this.socket.on("connect_error", (error) => {
+      console.error("❌ WebSocket connection error:", error.message);
+    });
 
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", () => {

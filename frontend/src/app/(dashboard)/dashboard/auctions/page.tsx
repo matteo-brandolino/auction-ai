@@ -11,6 +11,8 @@ import { CountdownTimer } from "@/components/auction/countdown-timer";
 import type { Auction } from "@/types/auction";
 import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 
+export const dynamic = "force-dynamic";
+
 async function getAuctions(token: string): Promise<Auction[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 

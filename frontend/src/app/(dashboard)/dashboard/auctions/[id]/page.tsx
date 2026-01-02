@@ -3,6 +3,8 @@ import type { Auction, Bid } from "@/types/auction";
 import { redirect } from "next/navigation";
 import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 
+export const dynamic = "force-dynamic";
+
 async function getAuctionData(auctionId: string, token: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -70,6 +72,7 @@ export default async function AuctionRoomPage({
       initialBids={data.bids}
       auctionId={id}
       userId={session.user.id}
+      token={token}
     />
   );
 }

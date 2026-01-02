@@ -10,6 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 
+export const dynamic = "force-dynamic";
+
 async function getUserStats(token: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 

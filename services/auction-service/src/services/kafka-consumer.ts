@@ -1,5 +1,6 @@
 import { Kafka, Consumer, EachMessagePayload } from "kafkajs";
 import { Auction } from "../models/Auction";
+import { ProcessedMessage } from "../models/ProcessedMessage";
 import mongoose from "mongoose";
 
 let consumer: Consumer | null = null;
@@ -34,13 +35,25 @@ export const initKafkaConsumer = async () => {
   });
 };
 
-/**
- * Process a single bid event from Kafka
- */
 const processBidEvent = async (payload: EachMessagePayload) => {
   const { topic, partition, message } = payload;
 
   try {
+    const messageId = `${topic}-${partition}-${message.offset}`;
+
+    const existingMessage = await ProcessedMessage.findOne({ messageId });
+    if (existingMessage) {
+      console.log(`⏭️ Message ${messageId} already processed - skipping`);
+      await consumer?.commitOffsets([
+        {
+          topic,
+          partition,
+          offset: (parseInt(message.offset) + 1).toString(),
+        },
+      ]);
+      return;
+    }
+
     const bidEvent = JSON.parse(message.value?.toString() || "{}");
 
     console.log("Received bid event:", {
@@ -55,7 +68,11 @@ const processBidEvent = async (payload: EachMessagePayload) => {
       await updateAuctionFromBid(bidEvent);
     }
 
-    // Commit offset after successful processing (at-least-once delivery)
+    await ProcessedMessage.create({
+      messageId,
+      topic,
+    });
+
     await consumer?.commitOffsets([
       {
         topic,
@@ -65,7 +82,6 @@ const processBidEvent = async (payload: EachMessagePayload) => {
     ]);
   } catch (error) {
     console.error("❌ Error processing bid event:", error);
-    // Don't commit offset - message will be reprocessed
   }
 };
 

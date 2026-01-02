@@ -2,6 +2,7 @@
 
 import { getServerAccessToken } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function publishAuctionAction(auctionId: string) {
   const token = await getServerAccessToken();
@@ -25,7 +26,12 @@ export async function publishAuctionAction(auctionId: string) {
     throw new Error(error.error || "Failed to publish auction");
   }
 
-  return await response.json();
+  const result = await response.json();
+
+  revalidatePath("/dashboard/my-auctions");
+  revalidatePath("/dashboard/auctions");
+
+  return result;
 }
 
 export async function getItemsAction() {
@@ -80,7 +86,12 @@ export async function createAuctionAction(formData: {
     throw new Error(error.error || "Failed to create auction");
   }
 
-  return await response.json();
+  const result = await response.json();
+
+  revalidatePath("/dashboard/my-auctions");
+  revalidatePath("/dashboard/items");
+
+  return result;
 }
 
 export async function placeBidAction(auctionId: string, amount: number) {
@@ -106,5 +117,11 @@ export async function placeBidAction(auctionId: string, amount: number) {
     throw new Error(error.error || "Failed to place bid");
   }
 
-  return await response.json();
+  const result = await response.json();
+
+  revalidatePath(`/dashboard/auctions/${auctionId}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/leaderboard");
+
+  return result;
 }

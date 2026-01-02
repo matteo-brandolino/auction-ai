@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
+export const dynamic = "force-dynamic";
+
 async function getLeaderboardData(token: string) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 

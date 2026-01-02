@@ -1,5 +1,6 @@
 import { Kafka, Consumer } from "kafkajs";
 import { handleBidPlaced, handleAuctionEnded } from "./stats-aggregator";
+import { ProcessedMessage } from "../models/ProcessedMessage";
 
 let consumer: Consumer | null = null;
 
@@ -18,8 +19,24 @@ export const initKafkaConsumer = async () => {
   await consumer.subscribe({ topic: "auctions", fromBeginning: false });
 
   await consumer.run({
+    autoCommit: false,
     eachMessage: async ({ topic, partition, message }) => {
       try {
+        const messageId = `${topic}-${partition}-${message.offset}`;
+
+        const existingMessage = await ProcessedMessage.findOne({ messageId });
+        if (existingMessage) {
+          console.log(`⏭️ Message ${messageId} already processed - skipping`);
+          await consumer?.commitOffsets([
+            {
+              topic,
+              partition,
+              offset: (parseInt(message.offset) + 1).toString(),
+            },
+          ]);
+          return;
+        }
+
         const value = message.value?.toString();
         if (!value) return;
 
@@ -47,6 +64,19 @@ export const initKafkaConsumer = async () => {
             endTime: new Date(event.endTime),
           });
         }
+
+        await ProcessedMessage.create({
+          messageId,
+          topic,
+        });
+
+        await consumer?.commitOffsets([
+          {
+            topic,
+            partition,
+            offset: (parseInt(message.offset) + 1).toString(),
+          },
+        ]);
       } catch (error) {
         console.error("Error processing Kafka message:", error);
       }

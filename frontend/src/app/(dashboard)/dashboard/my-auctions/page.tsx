@@ -12,6 +12,8 @@ import type { Auction } from "@/types/auction";
 import { PublishButton } from "./publish-button";
 import { getServerAccessToken, getServerSession } from "@/lib/auth-helpers";
 
+export const dynamic = "force-dynamic";
+
 async function getMyAuctions(token: string): Promise<Auction[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
