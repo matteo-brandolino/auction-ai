@@ -45,54 +45,54 @@ export default async function ItemsPage() {
   const items = await getItems(token);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">My Items</h2>
-          <p className="text-gray-500">Manage your items and create auctions</p>
+          <h2 className="text-3xl font-bold text-white">My Items</h2>
+          <p className="text-slate-400">Manage your items and create auctions</p>
         </div>
         <Link href="/dashboard/items/new">
-          <Button className="bg-violet-600 hover:bg-violet-700">
+          <Button className="bg-indigo-600 hover:bg-indigo-700">
             Create New Item
           </Button>
         </Link>
       </div>
 
       {items.length === 0 ? (
-        <Card>
+        <Card className="bg-slate-900 border-slate-800">
           <CardContent className="py-10 text-center">
-            <p className="text-gray-500">No items yet. Create your first item!</p>
+            <p className="text-slate-400">No items yet. Create your first item!</p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
-            <Card key={item.id}>
+            <Card key={item.id} className="bg-slate-900 border-slate-800">
               <CardHeader>
-                <CardTitle className="text-lg">{item.title}</CardTitle>
-                <CardDescription className="line-clamp-2">
+                <CardTitle className="text-lg text-white">{item.title}</CardTitle>
+                <CardDescription className="line-clamp-2 text-slate-400">
                   {item.description}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Category:</span>
-                    <span className="font-medium">{item.category}</span>
+                    <span className="text-slate-400">Category:</span>
+                    <span className="font-medium text-white">{item.category}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Condition:</span>
-                    <span className="font-medium">{item.condition}</span>
+                    <span className="text-slate-400">Condition:</span>
+                    <span className="font-medium text-white">{item.condition}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Status:</span>
+                    <span className="text-slate-400">Status:</span>
                     <span
-                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium border ${
                         item.status === "available"
-                          ? "bg-green-100 text-green-800"
+                          ? "bg-green-500/10 text-green-400 border-green-500/20"
                           : item.status === "in_auction"
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-gray-100 text-gray-800"
+                          ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                          : "bg-slate-800 text-slate-300 border-slate-700"
                       }`}
                     >
                       {item.status}
