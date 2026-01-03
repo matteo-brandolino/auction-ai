@@ -13,6 +13,7 @@ import {
   initKafkaProducer,
   disconnectKafkaProducer,
 } from "./services/kafka-producer";
+import { createTopics } from "./services/kafka-admin";
 import {
   startAuctionScheduler,
   stopAuctionScheduler,
@@ -62,6 +63,7 @@ app.use("/api/auctions", auctionRoutes);
 const startServer = async () => {
   try {
     await connectDB();
+    await createTopics();
     await initKafkaProducer();
     await initKafkaConsumer();
     startAuctionScheduler();

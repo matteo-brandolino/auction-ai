@@ -2,7 +2,7 @@ import { Kafka } from "kafkajs";
 
 export const createTopics = async () => {
   const kafka = new Kafka({
-    clientId: "bid-service-admin",
+    clientId: "auction-service-admin",
     brokers: [process.env.KAFKA_BROKER || "localhost:9092"],
   });
 
@@ -14,11 +14,11 @@ export const createTopics = async () => {
 
     const topics = await admin.listTopics();
 
-    if (!topics.includes("bids")) {
+    if (!topics.includes("auctions")) {
       await admin.createTopics({
         topics: [
           {
-            topic: "bids",
+            topic: "auctions",
             numPartitions: 1, // 1 for development, 3+ for production
             replicationFactor: 1, // 1 for development, 3 for production
             configEntries: [
@@ -34,19 +34,23 @@ export const createTopics = async () => {
           },
         ],
       });
-      console.log("Topic 'bids' created successfully");
+      console.log("Topic 'auctions' created successfully");
     } else {
-      console.log("Topic 'bids' already exists");
+      console.log("Topic 'auctions' already exists");
     }
 
     // Describe topic to show configuration
-    const topicMetadata = await admin.fetchTopicMetadata({ topics: ["bids"] });
-    const bidsMetadata = topicMetadata.topics.find((t) => t.name === "bids");
+    const topicMetadata = await admin.fetchTopicMetadata({
+      topics: ["auctions"],
+    });
+    const auctionsMetadata = topicMetadata.topics.find(
+      (t) => t.name === "auctions"
+    );
 
-    if (bidsMetadata) {
-      console.log(`Topic 'bids' info:`);
-      console.log(`   - Partitions: ${bidsMetadata.partitions.length}`);
-      bidsMetadata.partitions.forEach((p) => {
+    if (auctionsMetadata) {
+      console.log(`Topic 'auctions' info:`);
+      console.log(`   - Partitions: ${auctionsMetadata.partitions.length}`);
+      auctionsMetadata.partitions.forEach((p) => {
         console.log(`   - Partition ${p.partitionId}: Leader=${p.leader}`);
       });
     }

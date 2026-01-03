@@ -11,6 +11,7 @@ import {
   initKafkaProducer,
   disconnectKafkaProducer,
 } from "./services/kafka-producer";
+import { createTopics } from "./services/kafka-admin";
 
 dotenv.config();
 validateEnv();
@@ -53,6 +54,7 @@ app.use("/api/achievements", achievementRoutes);
 const startServer = async () => {
   try {
     await connectDB();
+    await createTopics();
     await initKafkaProducer();
 
     app.listen(PORT, () => {

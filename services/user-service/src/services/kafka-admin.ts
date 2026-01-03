@@ -2,7 +2,7 @@ import { Kafka } from "kafkajs";
 
 export const createTopics = async () => {
   const kafka = new Kafka({
-    clientId: "bid-service-admin",
+    clientId: "user-service-admin",
     brokers: [process.env.KAFKA_BROKER || "localhost:9092"],
   });
 
@@ -14,11 +14,11 @@ export const createTopics = async () => {
 
     const topics = await admin.listTopics();
 
-    if (!topics.includes("bids")) {
+    if (!topics.includes("achievements")) {
       await admin.createTopics({
         topics: [
           {
-            topic: "bids",
+            topic: "achievements",
             numPartitions: 1, // 1 for development, 3+ for production
             replicationFactor: 1, // 1 for development, 3 for production
             configEntries: [
@@ -34,19 +34,23 @@ export const createTopics = async () => {
           },
         ],
       });
-      console.log("Topic 'bids' created successfully");
+      console.log("Topic 'achievements' created successfully");
     } else {
-      console.log("Topic 'bids' already exists");
+      console.log("Topic 'achievements' already exists");
     }
 
     // Describe topic to show configuration
-    const topicMetadata = await admin.fetchTopicMetadata({ topics: ["bids"] });
-    const bidsMetadata = topicMetadata.topics.find((t) => t.name === "bids");
+    const topicMetadata = await admin.fetchTopicMetadata({
+      topics: ["achievements"],
+    });
+    const achievementsMetadata = topicMetadata.topics.find(
+      (t) => t.name === "achievements"
+    );
 
-    if (bidsMetadata) {
-      console.log(`Topic 'bids' info:`);
-      console.log(`   - Partitions: ${bidsMetadata.partitions.length}`);
-      bidsMetadata.partitions.forEach((p) => {
+    if (achievementsMetadata) {
+      console.log(`Topic 'achievements' info:`);
+      console.log(`   - Partitions: ${achievementsMetadata.partitions.length}`);
+      achievementsMetadata.partitions.forEach((p) => {
         console.log(`   - Partition ${p.partitionId}: Leader=${p.leader}`);
       });
     }

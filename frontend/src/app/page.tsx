@@ -39,7 +39,9 @@ export default async function HomePage() {
           <div className="max-w-3xl mx-auto space-y-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-full border border-slate-800">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-              <span className="text-sm font-medium text-slate-300">Live Auction Platform</span>
+              <span className="text-sm font-medium text-slate-300">
+                Live Auction Platform
+              </span>
             </div>
 
             <h1 className="font-display text-5xl md:text-6xl font-bold leading-tight text-white">
@@ -47,7 +49,8 @@ export default async function HomePage() {
             </h1>
 
             <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Participate in real-time auctions with competitive bidding. Secure, transparent, and efficient.
+              Participate in real-time auctions with competitive bidding.
+              Secure, transparent, and efficient.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-6">
@@ -63,21 +66,6 @@ export default async function HomePage() {
                   </button>
                 </Link>
               )}
-            </div>
-
-            <div className="grid grid-cols-3 gap-8 pt-12 border-t border-slate-800 mt-12">
-              <div>
-                <div className="text-3xl font-bold text-white mb-1">10K+</div>
-                <div className="text-sm text-slate-400">Active Users</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-white mb-1">500+</div>
-                <div className="text-sm text-slate-400">Live Auctions</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-white mb-1">50K+</div>
-                <div className="text-sm text-slate-400">Items Sold</div>
-              </div>
             </div>
           </div>
         </main>
