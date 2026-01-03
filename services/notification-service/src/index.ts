@@ -4,6 +4,7 @@ import {
   initKafkaConsumer,
   disconnectKafkaConsumer,
 } from "./services/kafka-consumer";
+import { connectDB } from "./config/database";
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ const WS_PORT = parseInt(process.env.PORT || "3006");
 
 const startServer = async () => {
   try {
+    await connectDB();
+
     initWebSocketServer(WS_PORT);
 
     await initKafkaConsumer();

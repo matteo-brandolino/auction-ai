@@ -4,11 +4,12 @@ export interface NotificationPayload {
     | "AUCTION_STARTED"
     | "AUCTION_ENDING"
     | "AUCTION_ENDED"
+    | "ACHIEVEMENT_UNLOCKED"
     | "OUTBID";
   userId?: string;
   data: {
-    auctionId: string;
-    message: string;
+    auctionId?: string;
+    message?: string;
     [key: string]: any;
   };
   timestamp: Date;

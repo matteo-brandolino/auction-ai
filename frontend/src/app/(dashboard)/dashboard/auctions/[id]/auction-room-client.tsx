@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -13,8 +13,7 @@ import { Input } from "@/components/ui/input";
 import { CountdownTimer } from "@/components/auction/countdown-timer";
 import { useAuctionStore } from "@/stores/auction-store";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { apiClient } from "@/lib/api-client";
-import type { Auction, Bid, BidPlacedEvent } from "@/types/auction";
+import type { Auction, Bid } from "@/types/auction";
 import { placeBidAction } from "@/app/actions/auction-actions";
 
 interface Props {
@@ -45,11 +44,17 @@ export function AuctionRoomClient({
     setBidAmount(initialAuction.currentPrice + initialAuction.minIncrement);
   }, [initialAuction, initialBids, setAuction, setBids]);
 
-  useWebSocket({
-    token,
-    auctionId,
-    onBidPlaced: (event: any) => {
+  const handleBidPlaced = useCallback(
+    (event: any) => {
+      console.log("[WebSocket] Bid received:", event);
+
       const { auctionId: eventAuctionId, amount, bidderId, bidId } = event.data;
+      console.log("[WebSocket] Extracted data:", {
+        eventAuctionId,
+        amount,
+        bidderId,
+        bidId,
+      });
 
       const newBid: Bid = {
         id: bidId,
@@ -65,11 +70,19 @@ export function AuctionRoomClient({
       addBid(newBid);
       updateAuctionPrice(amount, bidderId);
 
-      if (auction) {
-        setBidAmount(amount + auction.minIncrement);
+      const currentAuction = useAuctionStore.getState().auction;
+      if (currentAuction) {
+        setBidAmount(amount + currentAuction.minIncrement);
       }
     },
-    onAuctionEnded: (data) => {},
+    [addBid, updateAuctionPrice]
+  );
+
+  useWebSocket({
+    token,
+    auctionId,
+    onBidPlaced: handleBidPlaced,
+    onAuctionEnded: () => {},
   });
 
   async function handlePlaceBid() {

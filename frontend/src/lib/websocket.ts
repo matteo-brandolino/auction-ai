@@ -51,6 +51,7 @@ class WebSocketService {
 
   joinAuction(auctionId: string): void {
     if (!this.socket) throw new Error("Socket not connected");
+    console.log("[WebSocket] Joining auction room:", auctionId);
     this.socket.emit("join-auction", auctionId);
   }
 
@@ -73,7 +74,10 @@ class WebSocketService {
   }
 
   onBidPlaced(callback: (data: BidPlacedEvent) => void): void {
-    this.on("bid_placed", callback);
+    this.on("bid_placed", (data) => {
+      console.log("[WebSocket] bid_placed event received:", data);
+      callback(data);
+    });
   }
 
   onAuctionEnded(callback: (data: WebSocketEvent) => void): void {

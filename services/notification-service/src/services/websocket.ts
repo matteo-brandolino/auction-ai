@@ -78,7 +78,7 @@ export const initWebSocketServer = (port: number) => {
 export const sendNotification = (notification: NotificationPayload) => {
   if (!io) return;
 
-  const auctionId = notification.data.auctionId; // 👈 Dentro data!
+  const auctionId = notification.data.auctionId;
 
   if (auctionId) {
     // Send to specific auction room
@@ -86,10 +86,10 @@ export const sendNotification = (notification: NotificationPayload) => {
       notification.type.toLowerCase(),
       notification
     );
-    console.log(`📤 Notification sent to auction ${auctionId}`);
+    console.log(`Notification sent to auction ${auctionId}`);
   } else {
     // Broadcast to all
     io.emit(notification.type.toLowerCase(), notification);
-    console.log(`📡 Notification broadcast`);
+    console.log(`Notification broadcast`);
   }
 };

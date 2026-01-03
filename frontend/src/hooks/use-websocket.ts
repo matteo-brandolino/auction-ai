@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { wsService } from "@/lib/websocket";
 import type { BidPlacedEvent, WebSocketEvent } from "@/types/auction";
 
@@ -25,22 +25,36 @@ export function useWebSocket({
   useEffect(() => {
     if (!auctionId) return;
 
+    console.log("[Hook] Joining auction:", auctionId);
     wsService.joinAuction(auctionId);
 
     return () => {
+      console.log("[Hook] Leaving auction:", auctionId);
       wsService.leaveAuction(auctionId);
     };
   }, [auctionId]);
 
+  // Use ref to keep callback stable
+  const onBidPlacedRef = useRef(onBidPlaced);
   useEffect(() => {
-    if (!onBidPlaced) return;
+    onBidPlacedRef.current = onBidPlaced;
+  }, [onBidPlaced]);
 
-    wsService.onBidPlaced(onBidPlaced);
+  useEffect(() => {
+    if (!onBidPlacedRef.current) return;
+
+    console.log("[Hook] Registering bid_placed listener (stable)");
+    const stableCallback = (data: BidPlacedEvent) => {
+      onBidPlacedRef.current?.(data);
+    };
+
+    wsService.onBidPlaced(stableCallback);
 
     return () => {
-      wsService.off("bid_placed", onBidPlaced);
+      console.log("[Hook] Unregistering bid_placed listener (stable)");
+      wsService.off("bid_placed", stableCallback);
     };
-  }, [onBidPlaced]);
+  }, []); // Empty deps - only run once!
 
   useEffect(() => {
     if (!onAuctionEnded) return;
