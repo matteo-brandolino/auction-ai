@@ -82,13 +82,13 @@ export default function NewAuctionPage() {
   };
 
   if (loadingItems) {
-    return <div className="text-center py-10">Loading items...</div>;
+    return <div className="text-center py-10 text-muted-foreground">Loading items...</div>;
   }
 
   if (items.length === 0) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        <Card>
+      <div className="max-w-2xl mx-auto space-y-6 p-8">
+        <Card className="border-2">
           <CardHeader>
             <CardTitle>No Available Items</CardTitle>
             <CardDescription>
@@ -98,7 +98,7 @@ export default function NewAuctionPage() {
           <CardContent>
             <Button
               onClick={() => router.push("/dashboard/items/new")}
-              className="bg-violet-600 hover:bg-violet-700"
+              className="bg-primary hover:bg-[var(--navy-dark)] shadow-md hover:shadow-lg"
             >
               Create New Item
             </Button>
@@ -117,15 +117,15 @@ export default function NewAuctionPage() {
     .slice(0, 16);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">
+    <div className="max-w-2xl mx-auto space-y-6 p-8">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">
           Create New Auction
         </h2>
-        <p className="text-gray-500">Set up your auction details</p>
+        <p className="text-muted-foreground">Set up your auction details</p>
       </div>
 
-      <Card>
+      <Card className="border-2">
         <CardHeader>
           <CardTitle>Auction Details</CardTitle>
           <CardDescription>Configure your auction settings</CardDescription>
@@ -133,20 +133,20 @@ export default function NewAuctionPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+              <div className="bg-destructive/10 border-2 border-destructive/30 text-destructive px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Select Item *
               </label>
               <select
                 name="itemId"
                 required
                 defaultValue={preselectedItemId || ""}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
               >
                 <option value="">Choose an item</option>
                 {items.map((item) => (
@@ -158,39 +158,39 @@ export default function NewAuctionPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Auction Title *
               </label>
               <input
                 type="text"
                 name="title"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
                 placeholder="e.g. Vintage Watch Auction"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Description *
               </label>
               <textarea
                 name="description"
                 required
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
                 placeholder="Auction details..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Category *
               </label>
               <select
                 name="category"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
               >
                 <option value="">Select category</option>
                 <option value="electronics">Electronics</option>
@@ -207,7 +207,7 @@ export default function NewAuctionPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Starting Price *
                 </label>
                 <input
@@ -216,13 +216,13 @@ export default function NewAuctionPage() {
                   required
                   min="1"
                   step="0.01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
                   placeholder="100"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Min Increment
                 </label>
                 <input
@@ -230,7 +230,7 @@ export default function NewAuctionPage() {
                   name="minIncrement"
                   min="1"
                   defaultValue="10"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
                   placeholder="10"
                 />
               </div>
@@ -238,7 +238,7 @@ export default function NewAuctionPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Start Time *
                 </label>
                 <input
@@ -246,12 +246,12 @@ export default function NewAuctionPage() {
                   name="startTime"
                   required
                   min={minStartTime}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   End Time *
                 </label>
                 <input
@@ -259,7 +259,7 @@ export default function NewAuctionPage() {
                   name="endTime"
                   required
                   min={minEndTime}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
                 />
               </div>
             </div>
@@ -268,7 +268,7 @@ export default function NewAuctionPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-violet-600 hover:bg-violet-700 flex-1"
+                className="bg-primary hover:bg-[var(--navy-dark)] flex-1 shadow-md hover:shadow-lg"
               >
                 {loading ? "Creating..." : "Create Auction"}
               </Button>

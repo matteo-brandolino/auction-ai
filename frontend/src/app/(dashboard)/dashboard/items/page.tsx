@@ -48,51 +48,51 @@ export default async function ItemsPage() {
     <div className="space-y-6 p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-white">My Items</h2>
-          <p className="text-slate-400">Manage your items and create auctions</p>
+          <h2 className="text-3xl font-bold text-foreground">My Items</h2>
+          <p className="text-muted-foreground">Manage your items and create auctions</p>
         </div>
         <Link href="/dashboard/items/new">
-          <Button className="bg-indigo-600 hover:bg-indigo-700">
+          <Button className="bg-primary hover:bg-[var(--navy-dark)] shadow-md hover:shadow-lg">
             Create New Item
           </Button>
         </Link>
       </div>
 
       {items.length === 0 ? (
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="bg-card border-2 border-border">
           <CardContent className="py-10 text-center">
-            <p className="text-slate-400">No items yet. Create your first item!</p>
+            <p className="text-muted-foreground">No items yet. Create your first item!</p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
-            <Card key={item.id} className="bg-slate-900 border-slate-800">
+            <Card key={item.id} className="bg-card border-2 border-border hover:border-primary hover:shadow-lg transition-all">
               <CardHeader>
-                <CardTitle className="text-lg text-white">{item.title}</CardTitle>
-                <CardDescription className="line-clamp-2 text-slate-400">
+                <CardTitle className="text-lg text-foreground">{item.title}</CardTitle>
+                <CardDescription className="line-clamp-2">
                   {item.description}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Category:</span>
-                    <span className="font-medium text-white">{item.category}</span>
+                    <span className="text-muted-foreground">Category:</span>
+                    <span className="font-medium text-foreground">{item.category}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Condition:</span>
-                    <span className="font-medium text-white">{item.condition}</span>
+                    <span className="text-muted-foreground">Condition:</span>
+                    <span className="font-medium text-foreground">{item.condition}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Status:</span>
+                    <span className="text-muted-foreground">Status:</span>
                     <span
                       className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium border ${
                         item.status === "available"
-                          ? "bg-green-500/10 text-green-400 border-green-500/20"
+                          ? "bg-secondary/10 text-secondary border-secondary/30"
                           : item.status === "in_auction"
-                          ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                          : "bg-slate-800 text-slate-300 border-slate-700"
+                          ? "bg-primary/10 text-primary border-primary/30"
+                          : "bg-muted text-muted-foreground border-border"
                       }`}
                     >
                       {item.status}

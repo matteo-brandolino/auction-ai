@@ -85,20 +85,20 @@ export default async function LeaderboardPage() {
   return (
     <div className="space-y-6 p-8">
       <div>
-        <h2 className="text-3xl font-bold text-white">Leaderboard</h2>
-        <p className="text-slate-400">Top performers in BidWars</p>
+        <h2 className="text-3xl font-bold text-foreground">Leaderboard</h2>
+        <p className="text-muted-foreground">Top performers in BidWars</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Top Bidders */}
-        <Card className="lg:col-span-1 bg-slate-900 border-slate-800">
+        <Card className="lg:col-span-1 bg-card border-2 border-border shadow-md">
           <CardHeader>
-            <CardTitle className="text-white">Top Bidders</CardTitle>
-            <CardDescription className="text-slate-400">Most bids placed</CardDescription>
+            <CardTitle className="text-foreground">Top Bidders</CardTitle>
+            <CardDescription>Most bids placed</CardDescription>
           </CardHeader>
           <CardContent>
             {topBidders.length === 0 ? (
-              <p className="text-center text-slate-400 py-8">
+              <p className="text-center text-muted-foreground py-8">
                 No bidders yet. Be the first!
               </p>
             ) : (
@@ -106,29 +106,29 @@ export default async function LeaderboardPage() {
                 {topBidders.map((user: any, index: number) => (
                   <div
                     key={user.id}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                    className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
                       index < 3
-                        ? "bg-indigo-500/10 border border-indigo-500/20"
-                        : "bg-slate-800 border border-slate-700"
+                        ? "bg-primary/10 border-2 border-primary/30 shadow-sm"
+                        : "bg-muted border border-border"
                     }`}
                   >
-                    <div className="text-lg w-8 text-center font-bold text-indigo-400">
+                    <div className="text-lg w-8 text-center font-bold text-primary">
                       {getMedalIcon(index)}
                     </div>
                     <Avatar>
-                      <AvatarFallback className="bg-slate-700 text-white">{getInitials(user.name)}</AvatarFallback>
+                      <AvatarFallback className="bg-secondary text-primary-foreground">{getInitials(user.name)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <p className="font-semibold text-sm text-white">{user.name}</p>
-                      <p className="text-xs text-slate-400">
+                      <p className="font-semibold text-sm text-foreground">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">
                         {user.totalBids} total bids
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-indigo-400">
+                      <p className="text-sm font-bold text-primary">
                         ${user.credits.toLocaleString()}
                       </p>
-                      <p className="text-xs text-slate-400">spent</p>
+                      <p className="text-xs text-muted-foreground">spent</p>
                     </div>
                   </div>
                 ))}
@@ -138,14 +138,14 @@ export default async function LeaderboardPage() {
         </Card>
 
         {/* Most Active Today */}
-        <Card className="lg:col-span-1 bg-slate-900 border-slate-800">
+        <Card className="lg:col-span-1 bg-card border-2 border-border shadow-md">
           <CardHeader>
-            <CardTitle className="text-white">Most Active Today</CardTitle>
-            <CardDescription className="text-slate-400">Bidding champions</CardDescription>
+            <CardTitle className="text-foreground">Most Active Today</CardTitle>
+            <CardDescription>Bidding champions</CardDescription>
           </CardHeader>
           <CardContent>
             {mostActive.length === 0 ? (
-              <p className="text-center text-slate-400 py-8">
+              <p className="text-center text-muted-foreground py-8">
                 No activity today yet
               </p>
             ) : (
@@ -153,29 +153,29 @@ export default async function LeaderboardPage() {
                 {mostActive.map((user: any, index: number) => (
                   <div
                     key={user.id}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                    className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
                       index < 3
-                        ? "bg-amber-500/10 border border-amber-500/20"
-                        : "bg-slate-800 border border-slate-700"
+                        ? "bg-[var(--gold-accent)]/10 border-2 border-[var(--gold-accent)]/30 shadow-sm"
+                        : "bg-muted border border-border"
                     }`}
                   >
-                    <div className="text-lg w-8 text-center font-bold text-amber-400">
+                    <div className="text-lg w-8 text-center font-bold text-[var(--gold-accent)]">
                       {getMedalIcon(index)}
                     </div>
                     <Avatar>
-                      <AvatarFallback className="bg-slate-700 text-white">{getInitials(user.name)}</AvatarFallback>
+                      <AvatarFallback className="bg-secondary text-primary-foreground">{getInitials(user.name)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <p className="font-semibold text-sm text-white">{user.name}</p>
-                      <p className="text-xs text-slate-400">
+                      <p className="font-semibold text-sm text-foreground">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">
                         {user.activeAuctions} active auctions
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-amber-400">
+                      <p className="text-sm font-bold text-[var(--gold-accent)]">
                         {user.bidsToday}
                       </p>
-                      <p className="text-xs text-slate-400">bids today</p>
+                      <p className="text-xs text-muted-foreground">bids today</p>
                     </div>
                   </div>
                 ))}
@@ -185,14 +185,14 @@ export default async function LeaderboardPage() {
         </Card>
 
         {/* Biggest Wins */}
-        <Card className="lg:col-span-1 bg-slate-900 border-slate-800">
+        <Card className="lg:col-span-1 bg-card border-2 border-border shadow-md">
           <CardHeader>
-            <CardTitle className="text-white">Biggest Wins</CardTitle>
-            <CardDescription className="text-slate-400">Highest winning bids</CardDescription>
+            <CardTitle className="text-foreground">Biggest Wins</CardTitle>
+            <CardDescription>Highest winning bids</CardDescription>
           </CardHeader>
           <CardContent>
             {biggestWins.length === 0 ? (
-              <p className="text-center text-slate-400 py-8">
+              <p className="text-center text-muted-foreground py-8">
                 No wins recorded yet
               </p>
             ) : (
@@ -200,29 +200,29 @@ export default async function LeaderboardPage() {
                 {biggestWins.map((win: any, index: number) => (
                   <div
                     key={win.id}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                    className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
                       index < 3
-                        ? "bg-emerald-500/10 border border-emerald-500/20"
-                        : "bg-slate-800 border border-slate-700"
+                        ? "bg-secondary/10 border-2 border-secondary/30 shadow-sm"
+                        : "bg-muted border border-border"
                     }`}
                   >
-                    <div className="text-lg w-8 text-center font-bold text-emerald-400">
+                    <div className="text-lg w-8 text-center font-bold text-secondary">
                       {getMedalIcon(index)}
                     </div>
                     <Avatar>
-                      <AvatarFallback className="bg-slate-700 text-white">{getInitials(win.name)}</AvatarFallback>
+                      <AvatarFallback className="bg-secondary text-primary-foreground">{getInitials(win.name)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <p className="font-semibold text-sm text-white">{win.name}</p>
-                      <p className="text-xs text-slate-400 truncate">
+                      <p className="font-semibold text-sm text-foreground">{win.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
                         {win.auctionTitle}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-emerald-400">
+                      <p className="text-sm font-bold text-secondary">
                         ${win.winAmount.toLocaleString()}
                       </p>
-                      <p className="text-xs text-slate-400">won</p>
+                      <p className="text-xs text-muted-foreground">won</p>
                     </div>
                   </div>
                 ))}
@@ -233,53 +233,53 @@ export default async function LeaderboardPage() {
       </div>
 
       {/* Your Stats */}
-      <Card className="bg-slate-900 border-slate-800">
+      <Card className="bg-card border-2 border-border shadow-md">
         <CardHeader>
-          <CardTitle className="text-white">Your Ranking</CardTitle>
-          <CardDescription className="text-slate-400">See where you stand</CardDescription>
+          <CardTitle className="text-foreground">Your Ranking</CardTitle>
+          <CardDescription>See where you stand</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="text-center p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
-              <p className="text-3xl font-bold text-indigo-400">
+            <div className="text-center p-4 bg-primary/10 border-2 border-primary/30 rounded-lg shadow-sm">
+              <p className="text-3xl font-bold text-primary">
                 {myRanking?.totalBidsRank
                   ? `#${myRanking.totalBidsRank}`
                   : "-"}
               </p>
-              <p className="text-sm text-slate-300 mt-1">Total Bids Rank</p>
+              <p className="text-sm text-foreground mt-1 font-medium">Total Bids Rank</p>
               {myRanking?.stats && (
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {myRanking.stats.totalBids} bids
                 </p>
               )}
             </div>
-            <div className="text-center p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-              <p className="text-3xl font-bold text-amber-400">
+            <div className="text-center p-4 bg-[var(--gold-accent)]/10 border-2 border-[var(--gold-accent)]/30 rounded-lg shadow-sm">
+              <p className="text-3xl font-bold text-[var(--gold-accent)]">
                 {myRanking?.activityRank ? `#${myRanking.activityRank}` : "-"}
               </p>
-              <p className="text-sm text-slate-300 mt-1">Activity Rank</p>
+              <p className="text-sm text-foreground mt-1 font-medium">Activity Rank</p>
               {myRanking?.stats && (
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {myRanking.stats.bidsToday} today
                 </p>
               )}
             </div>
-            <div className="text-center p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-              <p className="text-3xl font-bold text-emerald-400">
+            <div className="text-center p-4 bg-secondary/10 border-2 border-secondary/30 rounded-lg shadow-sm">
+              <p className="text-3xl font-bold text-secondary">
                 {myRanking?.biggestWin
                   ? `$${myRanking.biggestWin.amount.toLocaleString()}`
                   : "-"}
               </p>
-              <p className="text-sm text-slate-300 mt-1">Biggest Win</p>
+              <p className="text-sm text-foreground mt-1 font-medium">Biggest Win</p>
               {myRanking?.biggestWin && (
-                <p className="text-xs text-slate-400 mt-1 truncate">
+                <p className="text-xs text-muted-foreground mt-1 truncate">
                   {myRanking.biggestWin.auctionTitle}
                 </p>
               )}
             </div>
           </div>
           {!myRanking?.stats?.totalBids && (
-            <p className="text-center text-sm text-slate-400 mt-4">
+            <p className="text-center text-sm text-muted-foreground mt-4">
               Start bidding to appear on the leaderboard!
             </p>
           )}

@@ -106,29 +106,29 @@ export default async function ProfilePage() {
   const getTierColor = (tier: string) => {
     switch (tier) {
       case "bronze":
-        return "bg-orange-100 text-orange-800 border-orange-300";
+        return "bg-[var(--coral-accent)]/10 text-[var(--coral-accent)] border-[var(--coral-accent)]/30";
       case "silver":
-        return "bg-gray-100 text-gray-800 border-gray-300";
+        return "bg-muted text-muted-foreground border-border";
       case "gold":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+        return "bg-[var(--gold-accent)]/10 text-[var(--gold-accent)] border-[var(--gold-accent)]/30";
       case "platinum":
-        return "bg-purple-100 text-purple-800 border-purple-300";
+        return "bg-primary/10 text-primary border-primary/30";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-muted text-muted-foreground border-border";
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Profile</h1>
         <p className="text-muted-foreground">
           View your stats, achievements, and rankings
         </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="border-2">
           <CardHeader>
             <CardTitle>User Information</CardTitle>
           </CardHeader>
@@ -160,7 +160,7 @@ export default async function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-2">
           <CardHeader>
             <CardTitle>Statistics</CardTitle>
           </CardHeader>
@@ -188,35 +188,35 @@ export default async function ProfilePage() {
       </div>
 
       {ranking && (
-        <Card>
+        <Card className="border-2">
           <CardHeader>
             <CardTitle>Rankings</CardTitle>
             <CardDescription>Your position on the leaderboards</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 border rounded-lg">
+              <div className="text-center p-4 border-2 border-border rounded-lg bg-muted/30">
                 <p className="text-sm text-muted-foreground">Total Bids</p>
-                <p className="text-3xl font-bold">#{ranking.ranks?.totalBidsRank || "-"}</p>
+                <p className="text-3xl font-bold text-primary">#{ranking.ranks?.totalBidsRank || "-"}</p>
               </div>
-              <div className="text-center p-4 border rounded-lg">
+              <div className="text-center p-4 border-2 border-border rounded-lg bg-muted/30">
                 <p className="text-sm text-muted-foreground">Auctions Won</p>
-                <p className="text-3xl font-bold">#{ranking.ranks?.auctionsWonRank || "-"}</p>
+                <p className="text-3xl font-bold text-secondary">#{ranking.ranks?.auctionsWonRank || "-"}</p>
               </div>
-              <div className="text-center p-4 border rounded-lg">
+              <div className="text-center p-4 border-2 border-border rounded-lg bg-muted/30">
                 <p className="text-sm text-muted-foreground">Total Spent</p>
-                <p className="text-3xl font-bold">#{ranking.ranks?.totalSpentRank || "-"}</p>
+                <p className="text-3xl font-bold text-[var(--gold-accent)]">#{ranking.ranks?.totalSpentRank || "-"}</p>
               </div>
-              <div className="text-center p-4 border rounded-lg">
+              <div className="text-center p-4 border-2 border-border rounded-lg bg-muted/30">
                 <p className="text-sm text-muted-foreground">Today's Bids</p>
-                <p className="text-3xl font-bold">#{ranking.ranks?.bidsTodayRank || "-"}</p>
+                <p className="text-3xl font-bold text-[var(--coral-accent)]">#{ranking.ranks?.bidsTodayRank || "-"}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      <Card>
+      <Card className="border-2">
         <CardHeader>
           <CardTitle>Achievements</CardTitle>
           <CardDescription>
@@ -257,7 +257,7 @@ export default async function ProfilePage() {
                     </div>
                   </div>
                   {isUnlocked && (
-                    <div className="mt-2 text-xs text-green-600 font-medium">
+                    <div className="mt-2 text-xs text-secondary font-medium">
                       ✓ Unlocked
                     </div>
                   )}

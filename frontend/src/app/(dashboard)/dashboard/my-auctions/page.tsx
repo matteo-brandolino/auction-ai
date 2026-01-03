@@ -47,12 +47,12 @@ export default async function MyAuctionsPage() {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      draft: "bg-slate-800 text-slate-300 border border-slate-700",
-      pending: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
-      active: "bg-green-500/10 text-green-400 border border-green-500/20",
-      ended: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+      draft: "bg-muted text-muted-foreground border-2 border-border",
+      pending: "bg-primary/10 text-primary border-2 border-primary/30",
+      active: "bg-secondary/10 text-secondary border-2 border-secondary/30",
+      ended: "bg-[var(--coral-accent)]/10 text-[var(--coral-accent)] border-2 border-[var(--coral-accent)]/30",
     };
-    return badges[status as keyof typeof badges] || "bg-slate-800 text-slate-300 border border-slate-700";
+    return badges[status as keyof typeof badges] || "bg-muted text-muted-foreground border-2 border-border";
   };
 
   const getStatusLabel = (status: string) => {
@@ -69,24 +69,24 @@ export default async function MyAuctionsPage() {
     <div className="space-y-6 p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-white">My Auctions</h2>
-          <p className="text-slate-400">Manage your auction listings</p>
+          <h2 className="text-3xl font-bold text-foreground">My Auctions</h2>
+          <p className="text-muted-foreground">Manage your auction listings</p>
         </div>
         <Link href="/dashboard/items">
-          <Button className="bg-indigo-600 hover:bg-indigo-700">
+          <Button className="bg-primary hover:bg-[var(--navy-dark)] shadow-md hover:shadow-lg">
             Create New Auction
           </Button>
         </Link>
       </div>
 
       {auctions.length === 0 ? (
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="bg-card border-2 border-border">
           <CardContent className="py-10 text-center">
-            <p className="text-slate-400 mb-4">
+            <p className="text-muted-foreground mb-4">
               You haven't created any auctions yet
             </p>
             <Link href="/dashboard/items">
-              <Button className="bg-indigo-600 hover:bg-indigo-700">
+              <Button className="bg-primary hover:bg-[var(--navy-dark)] shadow-md hover:shadow-lg">
                 Create Your First Auction
               </Button>
             </Link>
@@ -95,19 +95,19 @@ export default async function MyAuctionsPage() {
       ) : (
         <div className="grid gap-4">
           {auctions.map((auction) => (
-            <Card key={auction.id} className="bg-slate-900 border-slate-800">
+            <Card key={auction.id} className="bg-card border-2 border-border hover:border-primary hover:shadow-lg transition-all">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <CardTitle className="text-xl text-white">{auction.title}</CardTitle>
+                      <CardTitle className="text-xl text-foreground">{auction.title}</CardTitle>
                       <span
                         className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusBadge(auction.status)}`}
                       >
                         {getStatusLabel(auction.status)}
                       </span>
                     </div>
-                    <CardDescription className="line-clamp-2 text-slate-400">
+                    <CardDescription className="line-clamp-2">
                       {auction.description}
                     </CardDescription>
                   </div>
@@ -131,28 +131,28 @@ export default async function MyAuctionsPage() {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
-                    <span className="text-slate-400">Starting Price:</span>
-                    <p className="font-semibold text-white">${auction.startingPrice}</p>
+                    <span className="text-muted-foreground">Starting Price:</span>
+                    <p className="font-semibold text-foreground">${auction.startingPrice}</p>
                   </div>
                   <div>
-                    <span className="text-slate-400">Current Price:</span>
-                    <p className="font-semibold text-amber-500">
+                    <span className="text-muted-foreground">Current Price:</span>
+                    <p className="font-semibold text-[var(--gold-accent)]">
                       ${auction.currentPrice}
                     </p>
                   </div>
                   <div>
-                    <span className="text-slate-400">Total Bids:</span>
-                    <p className="font-semibold text-white">{auction.totalBids}</p>
+                    <span className="text-muted-foreground">Total Bids:</span>
+                    <p className="font-semibold text-foreground">{auction.totalBids}</p>
                   </div>
                   <div>
-                    <span className="text-slate-400">
+                    <span className="text-muted-foreground">
                       {auction.status === "draft" || auction.status === "pending"
                         ? "Starts:"
                         : auction.status === "active"
                         ? "Ends:"
                         : "Ended:"}
                     </span>
-                    <p className="font-semibold text-white">
+                    <p className="font-semibold text-foreground">
                       {new Date(
                         auction.status === "active" || auction.status === "ended"
                           ? auction.endTime

@@ -56,7 +56,7 @@ export function CountdownTimer({ endTime, className = "" }: CountdownTimerProps)
 
   if (timeLeft.total <= 0) {
     return (
-      <span className={`font-semibold text-gray-500 ${className}`}>
+      <span className={`font-semibold text-muted-foreground ${className}`}>
         Ended
       </span>
     );
@@ -66,10 +66,10 @@ export function CountdownTimer({ endTime, className = "" }: CountdownTimerProps)
   const isWarning = timeLeft.total < 30 * 60 * 1000;
 
   const textColor = isUrgent
-    ? "text-red-600"
+    ? "text-destructive"
     : isWarning
-    ? "text-orange-600"
-    : "text-green-600";
+    ? "text-[var(--coral-accent)]"
+    : "text-secondary";
 
   const formatNumber = (num: number) => String(num).padStart(2, "0");
 

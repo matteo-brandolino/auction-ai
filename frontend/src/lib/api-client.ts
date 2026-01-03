@@ -10,12 +10,49 @@ import type { Item, CreateItemData, CreateAuctionData } from "@/types/item";
 
 export class ApiClient {
   private baseUrl: string;
+  private isRefreshing = false;
+  private refreshPromise: Promise<string | null> | null = null;
 
   constructor() {
     this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   }
 
-  async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  private async refreshToken(): Promise<string | null> {
+    if (this.isRefreshing && this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.isRefreshing = true;
+    this.refreshPromise = (async () => {
+      try {
+        const response = await fetch("/api/auth/refresh-client", {
+          method: "POST",
+        });
+
+        if (!response.ok) {
+          if (typeof window !== "undefined") {
+            window.location.href = "/login";
+          }
+          return null;
+        }
+
+        const data = await response.json();
+        return data.accessToken;
+      } catch (error) {
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
+        return null;
+      } finally {
+        this.isRefreshing = false;
+        this.refreshPromise = null;
+      }
+    })();
+
+    return this.refreshPromise;
+  }
+
+  async request<T>(endpoint: string, options?: RequestInit, retryCount = 0): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
 
     const response = await fetch(url, {
@@ -25,6 +62,31 @@ export class ApiClient {
         ...options?.headers,
       },
     });
+
+    if (response.status === 401 && retryCount === 0) {
+      console.log("[AUTH] Received 401, attempting refresh and retry...");
+
+      const newToken = await this.refreshToken();
+
+      if (newToken) {
+        const authHeader = options?.headers
+          ? (options.headers as Record<string, string>)["Authorization"]
+          : undefined;
+
+        if (authHeader?.startsWith("Bearer ")) {
+          const newOptions = {
+            ...options,
+            headers: {
+              ...options?.headers,
+              Authorization: `Bearer ${newToken}`,
+            },
+          };
+
+          console.log("[AUTH] Retrying request with new token...");
+          return this.request<T>(endpoint, newOptions, retryCount + 1);
+        }
+      }
+    }
 
     if (!response.ok) {
       let errorData;

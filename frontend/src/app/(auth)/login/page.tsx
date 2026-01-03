@@ -49,7 +49,7 @@ export default async function LoginPage({
       <CardContent>
         <form action={handleLogin} className="space-y-4">
           {params.error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="bg-destructive/10 border-2 border-destructive/30 text-destructive px-4 py-3 rounded-lg">
               Invalid email or password
             </div>
           )}
@@ -76,13 +76,13 @@ export default async function LoginPage({
             />
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full bg-primary hover:bg-[var(--navy-dark)] shadow-md hover:shadow-lg">
             Sign In
           </Button>
 
-          <p className="text-sm text-center text-gray-600">
+          <p className="text-sm text-center text-muted-foreground">
             Don't have an account?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline">
+            <Link href="/register" className="text-primary hover:underline font-medium">
               Sign Up
             </Link>
           </p>

@@ -43,11 +43,11 @@ export function AchievementListener() {
 
           toast.success(
             <div className="flex items-start gap-3">
-              <Trophy className="w-8 h-8 text-amber-500" />
+              <Trophy className="w-8 h-8 text-[var(--gold-accent)]" />
               <div className="flex-1">
-                <div className="font-semibold text-white">Achievement Unlocked!</div>
-                <div className="text-sm text-white">{name}</div>
-                <div className="text-xs text-slate-300">
+                <div className="font-semibold text-foreground">Achievement Unlocked!</div>
+                <div className="text-sm text-foreground">{name}</div>
+                <div className="text-xs text-muted-foreground">
                   {description} (+{points} pts)
                 </div>
               </div>

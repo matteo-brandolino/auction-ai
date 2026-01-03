@@ -78,20 +78,13 @@ export default function RegisterPage() {
             />
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full bg-primary hover:bg-[var(--navy-dark)] shadow-md hover:shadow-lg">
             Registrati
           </Button>
 
-          <p
-            className="text-sm text-center 
-  text-gray-600"
-          >
+          <p className="text-sm text-center text-muted-foreground">
             Hai già un account?{" "}
-            <Link
-              href="/login"
-              className="text-blue-600 
-  hover:underline"
-            >
+            <Link href="/login" className="text-primary hover:underline font-medium">
               Accedi
             </Link>
           </p>
