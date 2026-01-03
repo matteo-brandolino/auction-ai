@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { createItemAction } from "@/app/actions/auction-actions";
 import {
   Card,
@@ -11,32 +14,69 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const CATEGORIES = [
+  "electronics",
+  "fashion",
+  "home",
+  "sports",
+  "toys",
+  "books",
+  "art",
+  "collectibles",
+  "other",
+] as const;
+
+const CONDITIONS = ["new", "like_new", "good", "fair", "poor"] as const;
+
+const itemSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  category: z.enum(CATEGORIES, { message: "Please select a category" }),
+  condition: z.enum(CONDITIONS, { message: "Please select a condition" }),
+});
+
+type ItemFormValues = z.infer<typeof itemSchema>;
 
 export default function NewItemPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  const form = useForm<ItemFormValues>({
+    resolver: zodResolver(itemSchema),
+    mode: "onChange",
+    defaultValues: {
+      title: "",
+      description: "",
+    },
+  });
+
+  const onSubmit = async (data: ItemFormValues) => {
     setError("");
 
-    const formData = new FormData(e.currentTarget);
-
     try {
-      await createItemAction({
-        title: formData.get("title") as string,
-        description: formData.get("description") as string,
-        category: formData.get("category") as string,
-        condition: formData.get("condition") as string,
-      });
-
+      await createItemAction(data);
       router.push("/dashboard/items");
-    } catch (err: any) {
-      const errorMessage = err.message || "Failed to create item";
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to create item";
       setError(errorMessage);
-      setLoading(false);
     }
   };
 
@@ -53,97 +93,117 @@ export default function NewItemPage() {
           <CardDescription>Provide information about your item</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="bg-destructive/10 border-2 border-destructive/30 text-destructive px-4 py-3 rounded-lg">
-                {error}
-              </div>
-            )}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {error && (
+                <div className="bg-destructive/10 border-2 border-destructive/30 text-destructive px-4 py-3 rounded-lg">
+                  {error}
+                </div>
+              )}
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Title *
-              </label>
-              <input
-                type="text"
+              <FormField
+                control={form.control}
                 name="title"
-                required
-                className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
-                placeholder="e.g. Vintage Watch"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Vintage Watch" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Description *
-              </label>
-              <textarea
+              <FormField
+                control={form.control}
                 name="description"
-                required
-                rows={4}
-                className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
-                placeholder="Describe your item in detail..."
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description *</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe your item in detail..."
+                        rows={4}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Category *
-              </label>
-              <select
+              <FormField
+                control={form.control}
                 name="category"
-                required
-                className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
-              >
-                <option value="">Select category</option>
-                <option value="electronics">Electronics</option>
-                <option value="fashion">Fashion</option>
-                <option value="home">Home</option>
-                <option value="sports">Sports</option>
-                <option value="toys">Toys</option>
-                <option value="books">Books</option>
-                <option value="art">Art</option>
-                <option value="collectibles">Collectibles</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category *</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {CATEGORIES.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category.charAt(0).toUpperCase() + category.slice(1)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Condition *
-              </label>
-              <select
+              <FormField
+                control={form.control}
                 name="condition"
-                required
-                className="w-full px-3 py-2 border-2 border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background text-foreground"
-              >
-                <option value="">Select condition</option>
-                <option value="new">New</option>
-                <option value="like_new">Like New</option>
-                <option value="good">Good</option>
-                <option value="fair">Fair</option>
-                <option value="poor">Poor</option>
-              </select>
-            </div>
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Condition *</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select condition" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {CONDITIONS.map((condition) => (
+                          <SelectItem key={condition} value={condition}>
+                            {condition.split('_').map(word =>
+                              word.charAt(0).toUpperCase() + word.slice(1)
+                            ).join(' ')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="submit"
-                disabled={loading}
-                className="bg-primary hover:bg-[var(--navy-dark)] flex-1 shadow-md hover:shadow-lg"
-              >
-                {loading ? "Creating..." : "Create Item"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                  className="bg-primary hover:bg-[var(--navy-dark)] flex-1 shadow-md hover:shadow-lg"
+                >
+                  {form.formState.isSubmitting ? "Creating..." : "Create Item"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.back()}
+                  disabled={form.formState.isSubmitting}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
