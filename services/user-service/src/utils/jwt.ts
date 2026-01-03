@@ -1,4 +1,5 @@
-import jwt, { VerifyOptions } from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
+import type { VerifyOptions, SignOptions } from "jsonwebtoken";
 
 export interface TokenPayload {
   userId: string;
@@ -13,7 +14,7 @@ export const generateAccessToken = (payload: TokenPayload): string => {
     issuer: "auctionai-platform",
     audience: "auctionai-users",
     algorithm: "HS256",
-  });
+  } as SignOptions);
 };
 
 export const generateRefreshToken = (payload: TokenPayload): string => {
@@ -22,7 +23,7 @@ export const generateRefreshToken = (payload: TokenPayload): string => {
     issuer: "auctionai-platform",
     audience: "auctionai-users",
     algorithm: "HS256",
-  });
+  } as SignOptions);
 };
 
 export const verifyAccessToken = (token: string): TokenPayload => {
