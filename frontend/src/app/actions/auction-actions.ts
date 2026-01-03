@@ -4,7 +4,11 @@ import { getServerAccessToken } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-export async function publishAuctionAction(auctionId: string) {
+async function authenticatedFetch(
+  endpoint: string,
+  options?: RequestInit,
+  errorMessage = "Request failed"
+) {
   const token = await getServerAccessToken();
 
   if (!token) {
@@ -13,20 +17,31 @@ export async function publishAuctionAction(auctionId: string) {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-  const response = await fetch(`${apiUrl}/api/auctions/${auctionId}/publish`, {
-    method: "POST",
+  const response = await fetch(`${apiUrl}${endpoint}`, {
+    ...options,
     headers: {
-      "Content-Type": "application/json",
+      ...options?.headers,
       Authorization: `Bearer ${token}`,
     },
   });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || "Failed to publish auction");
+    throw new Error(error.error || errorMessage);
   }
 
-  const result = await response.json();
+  return await response.json();
+}
+
+export async function publishAuctionAction(auctionId: string) {
+  const result = await authenticatedFetch(
+    `/api/auctions/${auctionId}/publish`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    },
+    "Failed to publish auction"
+  );
 
   revalidatePath("/dashboard/my-auctions");
   revalidatePath("/dashboard/auctions");
@@ -35,26 +50,11 @@ export async function publishAuctionAction(auctionId: string) {
 }
 
 export async function getItemsAction() {
-  const token = await getServerAccessToken();
-
-  if (!token) {
-    redirect("/login");
-  }
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
-  const response = await fetch(`${apiUrl}/api/items`, {
-    cache: "no-store",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch items");
-  }
-
-  return await response.json();
+  return await authenticatedFetch(
+    "/api/items",
+    { cache: "no-store" },
+    "Failed to fetch items"
+  );
 }
 
 export async function createAuctionAction(formData: {
@@ -64,29 +64,15 @@ export async function createAuctionAction(formData: {
   startTime: string;
   duration: number;
 }) {
-  const token = await getServerAccessToken();
-
-  if (!token) {
-    redirect("/login");
-  }
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
-  const response = await fetch(`${apiUrl}/api/auctions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  const result = await authenticatedFetch(
+    "/api/auctions",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
     },
-    body: JSON.stringify(formData),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to create auction");
-  }
-
-  const result = await response.json();
+    "Failed to create auction"
+  );
 
   revalidatePath("/dashboard/my-auctions");
   revalidatePath("/dashboard/items");
@@ -94,30 +80,37 @@ export async function createAuctionAction(formData: {
   return result;
 }
 
-export async function placeBidAction(auctionId: string, amount: number) {
-  const token = await getServerAccessToken();
-
-  if (!token) {
-    redirect("/login");
-  }
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
-  const response = await fetch(`${apiUrl}/api/bids`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+export async function createItemAction(formData: {
+  title: string;
+  description: string;
+  category: string;
+  condition: string;
+}) {
+  const result = await authenticatedFetch(
+    "/api/items",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
     },
-    body: JSON.stringify({ auctionId, amount }),
-  });
+    "Failed to create item"
+  );
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to place bid");
-  }
+  revalidatePath("/dashboard/items");
 
-  const result = await response.json();
+  return result;
+}
+
+export async function placeBidAction(auctionId: string, amount: number) {
+  const result = await authenticatedFetch(
+    "/api/bids",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ auctionId, amount }),
+    },
+    "Failed to place bid"
+  );
 
   revalidatePath(`/dashboard/auctions/${auctionId}`);
   revalidatePath("/dashboard");

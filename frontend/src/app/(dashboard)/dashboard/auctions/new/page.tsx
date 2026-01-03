@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { apiClient } from "@/lib/api-client";
+import { getItemsAction, createAuctionAction } from "@/app/actions/auction-actions";
 import type { Item } from "@/types/item";
 import {
   Card,
@@ -30,7 +30,6 @@ export default function NewAuctionPage() {
       if (!session) return;
 
       try {
-        const { getItemsAction } = await import("@/app/actions/auction-actions");
         const response = await getItemsAction();
         const availableItems = response.items.filter(
           (item: Item) => item.status === "available"
@@ -63,7 +62,6 @@ export default function NewAuctionPage() {
     }
 
     try {
-      const { createAuctionAction } = await import("@/app/actions/auction-actions");
       const duration = Math.floor((endTime.getTime() - startTime.getTime()) / (1000 * 60));
 
       await createAuctionAction({

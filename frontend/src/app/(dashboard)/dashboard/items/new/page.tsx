@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { apiClient } from "@/lib/api-client";
+import { createItemAction } from "@/app/actions/auction-actions";
 import {
   Card,
   CardContent,
@@ -15,7 +14,6 @@ import { Button } from "@/components/ui/button";
 
 export default function NewItemPage() {
   const router = useRouter();
-  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -27,15 +25,12 @@ export default function NewItemPage() {
     const formData = new FormData(e.currentTarget);
 
     try {
-      await apiClient.createItem(
-        {
-          title: formData.get("title") as string,
-          description: formData.get("description") as string,
-          category: formData.get("category") as string,
-          condition: formData.get("condition") as string,
-        },
-        session?.accessToken as string
-      );
+      await createItemAction({
+        title: formData.get("title") as string,
+        description: formData.get("description") as string,
+        category: formData.get("category") as string,
+        condition: formData.get("condition") as string,
+      });
 
       router.push("/dashboard/items");
     } catch (err: any) {
