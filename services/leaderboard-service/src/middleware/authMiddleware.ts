@@ -7,6 +7,7 @@ export const authMiddleware = (
 ): void => {
   const userId = req.headers["x-user-id"];
   const userEmail = req.headers["x-user-email"];
+  const userName = req.headers["x-user-name"];
   const userRole = req.headers["x-user-role"];
 
   if (!userId || !userEmail) {
@@ -17,6 +18,7 @@ export const authMiddleware = (
   req.user = {
     userId: userId as string,
     email: userEmail as string,
+    name: (userName as string) || "",
     role: (userRole as string) || "user",
   };
 

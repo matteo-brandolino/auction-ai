@@ -106,16 +106,15 @@ export default function AuctionForm({
     setError("");
 
     try {
-      const duration = Math.floor(
-        (data.endTime.getTime() - data.startTime.getTime()) / (1000 * 60)
-      );
-
       await createAuctionAction({
         itemId: data.itemId,
+        title: data.title,
+        description: data.description,
+        category: data.category,
         startingPrice: data.startingPrice,
         minIncrement: data.minIncrement,
         startTime: data.startTime.toISOString(),
-        duration,
+        endTime: data.endTime.toISOString(),
       });
 
       router.push("/dashboard/auctions");

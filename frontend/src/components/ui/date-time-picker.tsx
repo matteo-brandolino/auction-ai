@@ -30,12 +30,28 @@ export function DateTimePicker({
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      // Preserve the time if it was already set
       const newDate = new Date(selectedDate);
+
       if (selectedDateTime) {
         newDate.setHours(selectedDateTime.getHours());
         newDate.setMinutes(selectedDateTime.getMinutes());
+      } else if (minDate) {
+        const today = new Date();
+        const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+        const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+        if (selectedDateOnly.getTime() === todayOnly.getTime()) {
+          newDate.setHours(minDate.getHours());
+          newDate.setMinutes(minDate.getMinutes());
+        }
       }
+
+      if (minDate && newDate < minDate) {
+        setSelectedDateTime(minDate);
+        setDate(minDate);
+        return;
+      }
+
       setSelectedDateTime(newDate);
       setDate(newDate);
     }
@@ -49,6 +65,13 @@ export function DateTimePicker({
       } else {
         newDate.setMinutes(parseInt(value) || 0);
       }
+
+      if (minDate && newDate < minDate) {
+        setSelectedDateTime(minDate);
+        setDate(minDate);
+        return;
+      }
+
       setSelectedDateTime(newDate);
       setDate(newDate);
     }
@@ -77,9 +100,12 @@ export function DateTimePicker({
           mode="single"
           selected={selectedDateTime}
           onSelect={handleDateSelect}
-          disabled={(date) =>
-            minDate ? date < minDate : false
-          }
+          disabled={(date) => {
+            if (!minDate) return false;
+            const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+            return dateOnly < minDateOnly;
+          }}
           initialFocus
         />
         <div className="p-3 border-t">

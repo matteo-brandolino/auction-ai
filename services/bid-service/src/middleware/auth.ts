@@ -1,15 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        userId: string;
-        email: string;
-        role: string;
-      };
-    }
-  }
-}
 
 export const authenticate = (
   req: Request,
@@ -19,6 +8,7 @@ export const authenticate = (
   try {
     const userId = req.headers["x-user-id"] as string;
     const email = req.headers["x-user-email"] as string;
+    const name = req.headers["x-user-name"] as string;
     const role = req.headers["x-user-role"] as string;
 
     if (!userId || !email || !role) {
@@ -31,6 +21,7 @@ export const authenticate = (
     req.user = {
       userId,
       email,
+      name: name || "",
       role,
     };
 

@@ -15,6 +15,7 @@ import { useAuctionStore } from "@/stores/auction-store";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { apiClient } from "@/lib/api-client";
 import type { Auction, Bid, BidPlacedEvent } from "@/types/auction";
+import { placeBidAction } from "@/app/actions/auction-actions";
 
 interface Props {
   initialAuction: Auction;
@@ -84,7 +85,6 @@ export function AuctionRoomClient({
       setError(null);
       setIsSubmitting(true);
 
-      const { placeBidAction } = await import("@/app/actions/auction-actions");
       await placeBidAction(auctionId, bidAmount);
     } catch (err: any) {
       setError(err.message || "Failed to place bid");

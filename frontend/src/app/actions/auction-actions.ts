@@ -59,10 +59,13 @@ export async function getItemsAction() {
 
 export async function createAuctionAction(formData: {
   itemId: string;
+  title: string;
+  description: string;
+  category: string;
   startingPrice: number;
   minIncrement: number;
   startTime: string;
-  duration: number;
+  endTime: string;
 }) {
   const result = await authenticatedFetch(
     "/api/auctions",

@@ -20,7 +20,7 @@ async function refreshAccessToken(
 
     return data.accessToken;
   } catch (error) {
-    console.error("[AUTH] Failed to refresh token:", error);
+    console.error("Failed to refresh token:", error);
     return null;
   }
 }
@@ -79,7 +79,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.accessTokenExpires = getTokenExpiration(user.accessToken);
-        console.log("[AUTH] New login - access token expires at:", new Date(token.accessTokenExpires as number).toISOString());
         return token;
       }
 
@@ -88,10 +87,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const timeUntilExpiry = accessTokenExpires - now;
 
       if (timeUntilExpiry < 2 * 60 * 1000) {
-        console.log("[AUTH] Token expiring soon or expired, attempting refresh...", {
-          expiresAt: new Date(accessTokenExpires).toISOString(),
-          timeUntilExpiry: Math.round(timeUntilExpiry / 1000) + "s"
-        });
+        console.log(
+          "[AUTH] Token expiring soon or expired, attempting refresh...",
+          {
+            expiresAt: new Date(accessTokenExpires).toISOString(),
+            timeUntilExpiry: Math.round(timeUntilExpiry / 1000) + "s",
+          }
+        );
 
         const newAccessToken = await refreshAccessToken(
           token.refreshToken as string
@@ -100,10 +102,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (newAccessToken) {
           token.accessToken = newAccessToken;
           token.accessTokenExpires = getTokenExpiration(newAccessToken);
-          console.log("[AUTH] Token refreshed successfully, new expiry:", new Date(token.accessTokenExpires as number).toISOString());
+          console.log(
+            "[AUTH] Token refreshed successfully, new expiry:",
+            new Date(token.accessTokenExpires as number).toISOString()
+          );
           return token;
         } else {
-          console.error("[AUTH] Failed to refresh token - invalidating session");
+          console.error(
+            "[AUTH] Failed to refresh token - invalidating session"
+          );
           return null;
         }
       }
