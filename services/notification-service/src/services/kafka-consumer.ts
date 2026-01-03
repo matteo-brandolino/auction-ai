@@ -40,7 +40,7 @@ const processEvent = async (payload: EachMessagePayload) => {
 
     const existingMessage = await ProcessedMessage.findOne({ messageId });
     if (existingMessage) {
-      console.log(`⏭️ Message ${messageId} already processed - skipping`);
+      console.log(`Message ${messageId} already processed - skipping`);
       await consumer?.commitOffsets([
         {
           topic,

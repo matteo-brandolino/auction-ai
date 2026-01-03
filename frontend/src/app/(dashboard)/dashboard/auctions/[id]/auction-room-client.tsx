@@ -114,7 +114,7 @@ export function AuctionRoomClient({
     new Date(auction.endTime) < new Date() || auction.status === "ended";
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{auction.title}</h1>

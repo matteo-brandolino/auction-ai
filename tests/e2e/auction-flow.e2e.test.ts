@@ -57,7 +57,7 @@ describe("E2E: Complete Auction Flow", () => {
       ],
     });
     await admin.disconnect();
-    console.log("✅ Kafka topics created");
+    console.log("Kafka topics created");
 
     producer = kafka.producer();
     await producer.connect();

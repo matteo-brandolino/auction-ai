@@ -44,36 +44,36 @@ export const initWebSocketServer = (port: number) => {
       };
 
       socket.user = decoded;
-      console.log(`✅ Authenticated user: ${decoded.userId} (${decoded.email})`);
+      console.log(`Authenticated user: ${decoded.userId} (${decoded.email})`);
       next();
     } catch (error) {
-      console.error("❌ JWT verification failed:", error);
+      console.error("JWT verification failed:", error);
       return next(new Error("Authentication error: Invalid token"));
     }
   });
 
   io.on("connection", (socket: AuthenticatedSocket) => {
-    console.log(`🔌 Client connected: ${socket.id} (User: ${socket.user?.userId})`);
+    console.log(`Client connected: ${socket.id} (User: ${socket.user?.userId})`);
 
     socket.on("join-auction", (auctionId: string) => {
       socket.join(`auction-${auctionId}`);
       console.log(
-        `✅ User ${socket.user?.userId} joined auction ${auctionId}`
+        `User ${socket.user?.userId} joined auction ${auctionId}`
       );
     });
 
     socket.on("leave-auction", (auctionId: string) => {
       socket.leave(`auction-${auctionId}`);
-      console.log(`❌ User ${socket.user?.userId} left auction ${auctionId}`);
+      console.log(`User ${socket.user?.userId} left auction ${auctionId}`);
     });
 
     socket.on("disconnect", () => {
-      console.log(`❌ Client disconnected: ${socket.id} (User: ${socket.user?.userId})`);
+      console.log(`Client disconnected: ${socket.id} (User: ${socket.user?.userId})`);
     });
   });
 
   httpServer.listen(port);
-  console.log(`📡 WebSocket server running on port ${port}`);
+  console.log(`WebSocket server running on port ${port}`);
 };
 export const sendNotification = (notification: NotificationPayload) => {
   if (!io) return;

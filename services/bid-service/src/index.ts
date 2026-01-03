@@ -49,8 +49,8 @@ const startServer = async () => {
     await initKafkaProducer();
 
     app.listen(PORT, () => {
-      console.log(`💰 Bid Service running on http://localhost:${PORT}`);
-      console.log(`📦 Database: bidwars-bids`);
+      console.log(`Bid Service running on http://localhost:${PORT}`);
+      console.log(`Database: bidwars-bids`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
     });
   } catch (error) {

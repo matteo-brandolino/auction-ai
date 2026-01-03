@@ -22,15 +22,15 @@ class WebSocketService {
     });
 
     this.socket.on("connect", () => {
-      console.log("✅ WebSocket connected");
+      console.log("WebSocket connected");
     });
 
     this.socket.on("disconnect", () => {
-      console.log("❌ WebSocket disconnected");
+      console.log("WebSocket disconnected");
     });
 
     this.socket.on("connect_error", (error) => {
-      console.error("❌ WebSocket connection error:", error.message);
+      console.error("WebSocket connection error:", error.message);
     });
 
     if (typeof window !== "undefined") {

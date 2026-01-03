@@ -16,11 +16,11 @@ export const getTopBidders = async (
     const cached = await redis.get(cacheKey);
 
     if (cached) {
-      console.log(`🎯 Cache HIT: ${cacheKey}`);
+      console.log(`Cache HIT: ${cacheKey}`);
       return res.status(200).json(JSON.parse(cached));
     }
 
-    console.log(`💾 Cache MISS: ${cacheKey} - Querying DB`);
+    console.log(`Cache MISS: ${cacheKey} - Querying DB`);
     const topBidders = await UserStats.find()
       .sort({ totalBids: -1 })
       .limit(limit)
@@ -56,11 +56,11 @@ export const getMostActiveToday = async (
     const cached = await redis.get(cacheKey);
 
     if (cached) {
-      console.log(`🎯 Cache HIT: ${cacheKey}`);
+      console.log(`Cache HIT: ${cacheKey}`);
       return res.status(200).json(JSON.parse(cached));
     }
 
-    console.log(`💾 Cache MISS: ${cacheKey} - Querying DB`);
+    console.log(`Cache MISS: ${cacheKey} - Querying DB`);
     const mostActive = await UserStats.find({ bidsToday: { $gt: 0 } })
       .sort({ bidsToday: -1 })
       .limit(limit)
@@ -96,11 +96,11 @@ export const getBiggestWins = async (
     const cached = await redis.get(cacheKey);
 
     if (cached) {
-      console.log(`🎯 Cache HIT: ${cacheKey}`);
+      console.log(`Cache HIT: ${cacheKey}`);
       return res.status(200).json(JSON.parse(cached));
     }
 
-    console.log(`💾 Cache MISS: ${cacheKey} - Querying DB`);
+    console.log(`Cache MISS: ${cacheKey} - Querying DB`);
     const biggestWins = await UserStats.find({ biggestWin: { $ne: null } })
       .sort({ "biggestWin.amount": -1 })
       .limit(limit)

@@ -11,7 +11,7 @@ export const createProtectedProxy = (
   targetUrl: string | undefined
 ) => {
   if (!targetUrl) {
-    console.error(`⚠️  Missing target URL for ${path}`);
+    console.error(`Missing target URL for ${path}`);
     return;
   }
 
@@ -31,7 +31,7 @@ export const createProtectedProxy = (
     })
   );
 
-  console.log(`✅ Protected proxy registered: ${path} -> ${targetUrl}`);
+  console.log(`Protected proxy registered: ${path} -> ${targetUrl}`);
 };
 
 /**
@@ -43,7 +43,7 @@ export const createPublicProxy = (
   targetUrl: string | undefined
 ) => {
   if (!targetUrl) {
-    console.error(`⚠️  Missing target URL for ${path}`);
+    console.error(`Missing target URL for ${path}`);
     return;
   }
 
@@ -59,5 +59,5 @@ export const createPublicProxy = (
     })
   );
 
-  console.log(`✅ Public proxy registered: ${path} -> ${targetUrl}`);
+  console.log(`Public proxy registered: ${path} -> ${targetUrl}`);
 };

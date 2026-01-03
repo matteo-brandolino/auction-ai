@@ -43,7 +43,7 @@ const processBidEvent = async (payload: EachMessagePayload) => {
 
     const existingMessage = await ProcessedMessage.findOne({ messageId });
     if (existingMessage) {
-      console.log(`⏭️ Message ${messageId} already processed - skipping`);
+      console.log(`Message ${messageId} already processed - skipping`);
       await consumer?.commitOffsets([
         {
           topic,
@@ -81,7 +81,7 @@ const processBidEvent = async (payload: EachMessagePayload) => {
       },
     ]);
   } catch (error) {
-    console.error("❌ Error processing bid event:", error);
+    console.error("Error processing bid event:", error);
   }
 };
 
@@ -100,7 +100,7 @@ const updateAuctionFromBid = async (bidEvent: {
   const auction = await Auction.findById(auctionId);
 
   if (!auction) {
-    console.warn(`⚠️ Auction ${auctionId} not found - skipping update`);
+    console.warn(`Auction ${auctionId} not found - skipping update`);
     return;
   }
 
@@ -109,13 +109,13 @@ const updateAuctionFromBid = async (bidEvent: {
   const hasEnded = auction.endTime < now;
 
   if (hasEnded && auction.status === "active") {
-    console.log(`🏁 Auction ${auctionId} has ended - auto-closing`);
+    console.log(`Auction ${auctionId} has ended - auto-closing`);
 
     // Close the auction
     auction.status = "ended";
     await auction.save();
 
-    console.log(`✅ Auction ${auctionId} closed:`, {
+    console.log(`Auction ${auctionId} closed:`, {
       endTime: auction.endTime,
       finalPrice: auction.currentPrice,
       winnerId: auction.winnerId?.toString() || "No winner",
@@ -123,13 +123,13 @@ const updateAuctionFromBid = async (bidEvent: {
     });
 
     // Note: Bid that arrived after end time is not processed
-    console.warn(`⚠️ Bid ${bidEvent.bidId} arrived after auction ended - rejected`);
+    console.warn(`Bid ${bidEvent.bidId} arrived after auction ended - rejected`);
     return;
   }
 
   if (auction.status !== "active") {
     console.warn(
-      `⚠️ Auction ${auctionId} is ${auction.status} - skipping update`
+      `Auction ${auctionId} is ${auction.status} - skipping update`
     );
     return;
   }
@@ -146,7 +146,7 @@ const updateAuctionFromBid = async (bidEvent: {
 
   await auction.save();
 
-  console.log(`✅ Auction ${auctionId} updated:`, {
+  console.log(`Auction ${auctionId} updated:`, {
     currentPrice: auction.currentPrice,
     totalBids: auction.totalBids,
     uniqueBidders: auction.uniqueBidders.length,
