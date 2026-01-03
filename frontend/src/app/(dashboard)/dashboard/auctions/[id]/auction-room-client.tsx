@@ -214,7 +214,10 @@ export function AuctionRoomClient({
                         </div>
                         <div>
                           <p className="font-semibold text-lg">${bid.amount}</p>
-                          <p className="text-xs text-gray-500">
+                          <p
+                            className="text-xs text-gray-500"
+                            suppressHydrationWarning
+                          >
                             {new Date(bid.timestamp).toLocaleTimeString()}
                           </p>
                         </div>

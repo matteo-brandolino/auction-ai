@@ -16,21 +16,17 @@ interface TimeLeft {
 }
 
 export function CountdownTimer({ endTime, className = "" }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => {
-    const difference = new Date(endTime).getTime() - new Date().getTime();
-    if (difference <= 0) {
-      return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 };
-    }
-    return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
-      total: difference,
-    };
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    total: 0,
   });
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const calculateTimeLeft = (): TimeLeft => {
       const difference = new Date(endTime).getTime() - new Date().getTime();
       if (difference <= 0) {
@@ -53,6 +49,14 @@ export function CountdownTimer({ endTime, className = "" }: CountdownTimerProps)
 
     return () => clearInterval(timer);
   }, [endTime]);
+
+  if (!mounted) {
+    return (
+      <span className={`font-semibold text-muted-foreground ${className}`}>
+        --:--
+      </span>
+    );
+  }
 
   if (timeLeft.total <= 0) {
     return (
