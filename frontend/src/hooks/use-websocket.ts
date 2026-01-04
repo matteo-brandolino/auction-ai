@@ -9,6 +9,7 @@ interface UseWebSocketProps {
   auctionId?: string;
   onBidPlaced?: (data: BidPlacedEvent) => void;
   onAuctionEnded?: (data: WebSocketEvent) => void;
+  onAuctionStarted?: (data: any) => void;
 }
 
 export function useWebSocket({
@@ -16,6 +17,7 @@ export function useWebSocket({
   auctionId,
   onBidPlaced,
   onAuctionEnded,
+  onAuctionStarted,
 }: UseWebSocketProps) {
   useEffect(() => {
     if (!token) return;
@@ -54,7 +56,7 @@ export function useWebSocket({
       console.log("[Hook] Unregistering bid_placed listener (stable)");
       wsService.off("bid_placed", stableCallback);
     };
-  }, []); // Empty deps - only run once!
+  }, []);
 
   useEffect(() => {
     if (!onAuctionEnded) return;
@@ -65,6 +67,16 @@ export function useWebSocket({
       wsService.off("auction-ended", onAuctionEnded);
     };
   }, [onAuctionEnded]);
+
+  useEffect(() => {
+    if (!onAuctionStarted) return;
+
+    wsService.onAuctionStarted(onAuctionStarted);
+
+    return () => {
+      wsService.off("auction-started", onAuctionStarted);
+    };
+  }, [onAuctionStarted]);
 
   return {
     isConnected: wsService.isConnected(),

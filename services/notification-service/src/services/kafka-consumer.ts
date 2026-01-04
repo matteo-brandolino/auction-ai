@@ -18,11 +18,11 @@ export const initKafkaConsumer = async () => {
   await consumer.connect();
 
   await consumer.subscribe({
-    topics: ["bids", "achievements"],
+    topics: ["bids", "achievements", "auctions"],
     fromBeginning: false,
   });
 
-  console.log("Subscribed to topics: bids, achievements");
+  console.log("Subscribed to topics: bids, achievements, auctions");
 
   await consumer.run({
     autoCommit: false,
@@ -64,6 +64,8 @@ const processEvent = async (payload: EachMessagePayload) => {
       await handleBidEvent(event);
     } else if (topic === "achievements") {
       await handleAchievementEvent(event);
+    } else if (topic === "auctions") {
+      await handleAuctionEvent(event);
     }
 
     await ProcessedMessage.create({
@@ -125,6 +127,62 @@ const handleAchievementEvent = async (event: any) => {
         description: achievementDescription,
         icon: achievementIcon,
         points: achievementPoints,
+      },
+      timestamp: new Date(),
+    };
+
+    sendNotification(notification);
+  }
+};
+
+const handleAuctionEvent = async (event: any) => {
+  if (event.eventType === "AUCTION_ENDED") {
+    const { auctionId, winnerId, finalPrice, title, totalBids } = event;
+
+    const notification: NotificationPayload = {
+      type: "AUCTION_ENDED",
+      data: {
+        auctionId,
+        winnerId: winnerId || null,
+        finalPrice,
+        title,
+        totalBids,
+      },
+      timestamp: new Date(),
+    };
+
+    sendNotification(notification);
+  } else if (event.eventType === "AUCTION_STARTED") {
+    const {
+      auctionId,
+      title,
+      description,
+      category,
+      currentPrice,
+      startingPrice,
+      minIncrement,
+      endTime,
+      startTime,
+      totalBids,
+      sellerId,
+      itemId,
+    } = event;
+
+    const notification: NotificationPayload = {
+      type: "AUCTION_STARTED",
+      data: {
+        auctionId,
+        title,
+        description,
+        category,
+        currentPrice,
+        startingPrice,
+        minIncrement,
+        endTime,
+        startTime,
+        totalBids,
+        sellerId,
+        itemId,
       },
       timestamp: new Date(),
     };

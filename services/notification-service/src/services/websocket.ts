@@ -80,16 +80,31 @@ export const sendNotification = (notification: NotificationPayload) => {
 
   const auctionId = notification.data.auctionId;
 
+  // Map notification types to WebSocket event names
+  const EVENT_NAME_MAP: Record<string, string> = {
+    BID_PLACED: "bid_placed",
+    AUCTION_ENDED: "auction-ended",
+    ACHIEVEMENT_UNLOCKED: "achievement_unlocked",
+    AUCTION_STARTED: "auction-started",
+    AUCTION_ENDING: "auction-ending",
+    OUTBID: "outbid",
+  };
+
+  const eventName = EVENT_NAME_MAP[notification.type] || notification.type.toLowerCase();
+
   if (auctionId) {
-    // Send to specific auction room
-    io.to(`auction-${auctionId}`).emit(
-      notification.type.toLowerCase(),
-      notification
-    );
-    console.log(`Notification sent to auction ${auctionId}`);
+    if (eventName === 'auction-started') {
+      // Broadcast AUCTION_STARTED to all clients (for auction list updates)
+      io.emit(eventName, notification);
+      console.log(`Notification broadcast to all: ${eventName}`);
+    } else {
+      // Send to specific auction room (for bid updates, etc.)
+      io.to(`auction-${auctionId}`).emit(eventName, notification);
+      console.log(`Notification sent to auction ${auctionId}: ${eventName}`);
+    }
   } else {
     // Broadcast to all
-    io.emit(notification.type.toLowerCase(), notification);
-    console.log(`Notification broadcast`);
+    io.emit(eventName, notification);
+    console.log(`Notification broadcast: ${eventName}`);
   }
 };

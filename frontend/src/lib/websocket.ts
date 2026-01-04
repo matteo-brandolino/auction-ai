@@ -84,6 +84,10 @@ class WebSocketService {
     this.on("auction-ended", callback);
   }
 
+  onAuctionStarted(callback: (data: any) => void): void {
+    this.on("auction-started", callback);
+  }
+
   isConnected(): boolean {
     return this.socket?.connected || false;
   }

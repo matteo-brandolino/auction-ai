@@ -68,6 +68,60 @@ export const emitAuctionEndedEvent = async (auction: {
   }
 };
 
+export const emitAuctionStartedEvent = async (auction: {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  startingPrice: number;
+  currentPrice: number;
+  minIncrement: number;
+  endTime: Date;
+  startTime: Date;
+  totalBids: number;
+  sellerId: string;
+  itemId: string;
+}) => {
+  if (!producer) {
+    console.error("Kafka Producer not initialized");
+    return;
+  }
+
+  const event = {
+    eventType: "AUCTION_STARTED",
+    auctionId: auction.id,
+    title: auction.title,
+    description: auction.description,
+    category: auction.category,
+    startingPrice: auction.startingPrice,
+    currentPrice: auction.currentPrice,
+    minIncrement: auction.minIncrement,
+    endTime: auction.endTime,
+    startTime: auction.startTime,
+    totalBids: auction.totalBids,
+    sellerId: auction.sellerId,
+    itemId: auction.itemId,
+    timestamp: new Date().toISOString(),
+  };
+
+  try {
+    await producer.send({
+      topic: "auctions",
+      acks: -1,
+      timeout: 30000,
+      messages: [
+        {
+          key: auction.id,
+          value: JSON.stringify(event),
+        },
+      ],
+    });
+    console.log(`AUCTION_STARTED event emitted for ${auction.id}`);
+  } catch (error) {
+    console.error("Failed to emit auction started event:", error);
+  }
+};
+
 export const disconnectKafkaProducer = async () => {
   if (producer) {
     await producer.disconnect();

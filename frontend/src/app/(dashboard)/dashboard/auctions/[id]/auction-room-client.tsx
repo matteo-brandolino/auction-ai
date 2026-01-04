@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Trophy, Award } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -31,6 +34,7 @@ export function AuctionRoomClient({
   userId,
   token,
 }: Props) {
+  const router = useRouter();
   const { auction, bids, setAuction, setBids, addBid, updateAuctionPrice } =
     useAuctionStore();
 
@@ -78,11 +82,54 @@ export function AuctionRoomClient({
     [addBid, updateAuctionPrice]
   );
 
+  const handleAuctionEnded = useCallback(
+    (event: any) => {
+      const { winnerId, finalPrice, title } = event.data;
+
+      const didWin = winnerId === userId;
+
+      if (didWin) {
+        toast.success(
+          <div className="flex items-start gap-3">
+            <Trophy className="w-6 h-6 text-yellow-500" />
+            <div className="flex-1">
+              <div className="font-semibold">Congratulations! You Won!</div>
+              <div className="text-sm">
+                You won "{title}" for ${finalPrice}
+              </div>
+            </div>
+          </div>,
+          { duration: 3000 }
+        );
+      } else {
+        const winnerText = winnerId
+          ? `Won by ${winnerId} for $${finalPrice}`
+          : "No winner";
+
+        toast.info(
+          <div className="flex items-start gap-3">
+            <Award className="w-6 h-6 text-blue-500" />
+            <div className="flex-1">
+              <div className="font-semibold">Auction Ended</div>
+              <div className="text-sm">"{title}" - {winnerText}</div>
+            </div>
+          </div>,
+          { duration: 3000 }
+        );
+      }
+
+      if (auction) {
+        setAuction({ ...auction, status: "ended" });
+      }
+    },
+    [userId, auction, setAuction]
+  );
+
   useWebSocket({
     token,
     auctionId,
     onBidPlaced: handleBidPlaced,
-    onAuctionEnded: () => {},
+    onAuctionEnded: handleAuctionEnded,
   });
 
   async function handlePlaceBid() {

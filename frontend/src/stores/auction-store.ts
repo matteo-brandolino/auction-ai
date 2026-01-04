@@ -27,9 +27,16 @@ export const useAuctionStore = create<AuctionStore>((set) => ({
   setBids: (bids) => set({ bids }),
 
   addBid: (bid) =>
-    set((state) => ({
-      bids: [bid, ...state.bids],
-    })),
+    set((state) => {
+      // Check if bid already exists to prevent duplicates
+      const bidExists = state.bids.some((b) => b.id === bid.id);
+      if (bidExists) {
+        return state;
+      }
+      return {
+        bids: [bid, ...state.bids],
+      };
+    }),
 
   updateAuctionPrice: (currentPrice, winnerId) =>
     set((state) => ({

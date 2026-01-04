@@ -88,7 +88,6 @@ export default function AuctionForm({
 
   const now = new Date();
   const minStartTime = new Date(now.getTime() + 60000);
-  const minEndTime = new Date(now.getTime() + 3600000);
 
   const form = useForm<AuctionFormValues>({
     resolver: zodResolver(auctionSchema),
@@ -101,6 +100,11 @@ export default function AuctionForm({
       minIncrement: 10,
     },
   });
+
+  const startTime = form.watch("startTime");
+  const minEndTime = startTime
+    ? new Date(startTime.getTime() + 300000)
+    : new Date(minStartTime.getTime() + 300000);
 
   const onSubmit = async (data: AuctionFormValues) => {
     setError("");

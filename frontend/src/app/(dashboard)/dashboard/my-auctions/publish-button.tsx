@@ -45,7 +45,7 @@ export function PublishButton({ auctionId, auctionTitle }: PublishButtonProps) {
       <AlertDialogTrigger asChild>
         <Button
           size="sm"
-          className="bg-violet-600 hover:bg-violet-700"
+          className="bg-primary hover:bg-[var(--navy-dark)]"
         >
           Publish
         </Button>
@@ -64,7 +64,7 @@ export function PublishButton({ auctionId, auctionTitle }: PublishButtonProps) {
           <AlertDialogAction
             onClick={handlePublish}
             disabled={loading}
-            className="bg-violet-600 hover:bg-violet-700"
+            className="bg-primary hover:bg-[var(--navy-dark)]"
           >
             {loading ? "Publishing..." : "Publish"}
           </AlertDialogAction>
